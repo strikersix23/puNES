@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -148,6 +148,7 @@ extern _gfx gfx;
 
 EXTERNC BYTE gfx_init(void);
 EXTERNC void gfx_quit(void);
+EXTERNC BYTE gfx_palette_init(void);
 EXTERNC void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, BYTE palette, BYTE force_scale, BYTE force_palette);
 EXTERNC void gfx_draw_screen(void);
 

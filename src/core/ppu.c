@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ enum ppu_misc { PPU_OVERFLOW_SPR = 3 };
 		 * inferiore a 8 (per questo uso il WORD, per\
 		 * avere risultati unsigned).\
 		 */\
-		if ((WORD) (ppu.frame_x - sp[a].x_C) < 8) {\
+		if ((WORD)(ppu.frame_x - sp[a].x_C) < 8) {\
 			/*\
 			 * se il bit 2 del $2001 e' a 0 vuol dire\
 			 * che e' abilitato il clipping degli sprite\
@@ -127,6 +127,7 @@ enum ppu_misc { PPU_OVERFLOW_SPR = 3 };
 		spl[spenv.tmp_spr_plus].h_byte = (inv_chr[ppu_rd_mem(sadr | 0x08)] << 1);\
 	}
 
+static BYTE ppu_alloc_screen_buffer(_screen_buffer *sb);
 INLINE static void ppu_oam_evaluation(void);
 
 static const BYTE inv_chr[256] = {
@@ -198,7 +199,13 @@ void ppu_quit(void) {
 
 		if (sb->data) {
 			free(sb->data);
+			sb->data = NULL;
 		}
+	}
+
+	if (screen.preview.data) {
+		free(screen.preview.data);
+		screen.preview.data = NULL;
 	}
 }
 
@@ -226,7 +233,7 @@ void ppu_tick(void) {
 
 			ppu.tmp_vram = r2006.second_write.value;
 
-			if ((!ppu.vblank && r2001.visible && (ppu.screen_y < SCR_LINES)) && (ppu.frame_y > ppu_sclines.vint)) {
+			if ((!ppu.vblank && r2001.visible && (ppu.screen_y < SCR_ROWS)) && (ppu.frame_y > ppu_sclines.vint)) {
 				// split_scroll_test_v2.nes e split_scroll_delay.nes
 				if (ppu.frame_x == 255) {
 					ppu.tmp_vram &= r2006.value;
@@ -237,7 +244,7 @@ void ppu_tick(void) {
 				// nell'introduzione sono presenti su hardware reale).
 				// Anche "logo (E).nes" e "Ferrari - Grand Prix Challenge (U) [!].nes"
 				// ne sono soggetti.
-				if (ppu.frame_x < SCR_ROWS) {
+				if (ppu.frame_x < SCR_COLUMNS) {
 					if ((ppu.pixel_tile >= 1) && (ppu.pixel_tile <= 3)) {
 						r2006.race.ctrl = TRUE;
 						r2006.race.value = (r2006.value & 0x00FF) | (ppu.tmp_vram & 0xFF00);
@@ -329,7 +336,7 @@ void ppu_tick(void) {
 		 * disegnato un pixel a video (per questo motivo
 		 * utillizzo frameX per contarli [i cicli]).
 		 */
-		if (ppu.frame_x < SCR_ROWS) {
+		if (ppu.frame_x < SCR_COLUMNS) {
 			/*
 			 * controllo:
 			 * 1) di non essere nel vblank
@@ -342,7 +349,7 @@ void ppu_tick(void) {
 				if ((machine.type == PAL) && (ppu.frame_y > 23)) {
 					ppu_oam_evaluation();
 				}
-			} else if (ppu.screen_y < SCR_LINES) {
+			} else if (ppu.screen_y < SCR_ROWS) {
 				if (extcl_ppu_000_to_255) {
 					/*
 					 * utilizzato dalle mappers :
@@ -631,7 +638,7 @@ void ppu_tick(void) {
 		 * 		This process is repeated 8 times.
 		 */
 		if (ppu.frame_x < 320) {
-			if (!ppu.vblank && r2001.visible && (ppu.screen_y < SCR_LINES)) {
+			if (!ppu.vblank && r2001.visible && (ppu.screen_y < SCR_ROWS)) {
 				if (extcl_ppu_256_to_319) {
 					/*
 					 * utilizzato dalle mappers :
@@ -753,7 +760,7 @@ void ppu_tick(void) {
 		 * 		3. Fetch 2 pattern table bitmap bytes
 		 * 		This process is repeated 2 times.
 		 */
-		if (!ppu.vblank && (r2001.visible || r2001.race.ctrl) && (ppu.screen_y < SCR_LINES)) {
+		if (!ppu.vblank && (r2001.visible || r2001.race.ctrl) && (ppu.screen_y < SCR_ROWS)) {
 			if (extcl_ppu_320_to_34x) {
 				/*
 				 * utilizzato dalle mappers :
@@ -862,14 +869,14 @@ void ppu_tick(void) {
 		 *
 		 */
 		/* controllo di essere nel range [dummy...rendering screen] */
-		if ((ppu.frame_y >= ppu_sclines.vint) && (ppu.screen_y < SCR_LINES)) {
+		if ((ppu.frame_y >= ppu_sclines.vint) && (ppu.screen_y < SCR_ROWS)) {
 			BYTE a;
 
 			/* verifico di non trattare la dummy line */
 			if (ppu.frame_y > ppu_sclines.vint) {
 				/* incremento il contatore delle scanline renderizzate */
 				ppu.screen_y++;
-				if ((ppu.screen_y == SCR_LINES) && (info.no_ppu_draw_screen == 0)) {
+				if ((ppu.screen_y == SCR_ROWS) && (info.no_ppu_draw_screen == 0)) {
 					gfx_draw_screen();
 				}
 				if (extcl_ppu_update_screen_y) {
@@ -1024,27 +1031,12 @@ BYTE ppu_turn_on(void) {
 			screen.last_completed_wr = screen.wr;
 
 			for (a = 0; a < 2; a++) {
-				_screen_buffer *sb = &screen.buff[a];
-				BYTE b;
-
-				sb->ready = FALSE;
-				sb->frame = 0;
-
-				if (sb->data) {
-					free(sb->data);
-				}
-
-				if (!(sb->data = (WORD *)malloc(screen_size()))) {
-					fprintf(stderr, "Out of memory\n");
+				if (ppu_alloc_screen_buffer(&screen.buff[a]) == EXIT_ERROR) {
 					return (EXIT_ERROR);
 				}
-				/*
-			 	* creo una tabella di indici che puntano
-			 	* all'inizio di ogni linea dello screen.
-			 	*/
-				for (b = 0; b < SCR_LINES; b++) {
-					sb->line[b] = (WORD *)(sb->data + (b * SCR_ROWS));
-				}
+			}
+			if (ppu_alloc_screen_buffer(&screen.preview) == EXIT_ERROR) {
+				return (EXIT_ERROR);
 			}
 			/*
 			 * tabella di indici che puntano ad ogni
@@ -1068,8 +1060,8 @@ BYTE ppu_turn_on(void) {
 			for (a = 0; a < 2; a++) {
 				_screen_buffer *sb = &screen.buff[a];
 
-				for (y = 0; y < SCR_LINES; y++) {
-					for (x = 0; x < SCR_ROWS; x++) {
+				for (y = 0; y < SCR_ROWS; y++) {
+					for (x = 0; x < SCR_COLUMNS; x++) {
 						sb->line[y][x] = 0x000D;
 					}
 				}
@@ -1148,6 +1140,30 @@ void ppu_draw_screen_continue_ctrl_count(int *count) {
 	(*count) = 0;
 }
 
+static BYTE ppu_alloc_screen_buffer(_screen_buffer *sb) {
+	BYTE b;
+
+	sb->ready = FALSE;
+	sb->frame = 0;
+
+	if (sb->data) {
+		free(sb->data);
+	}
+
+	if (!(sb->data = (WORD *)malloc(screen_size()))) {
+		fprintf(stderr, "Out of memory\n");
+		return (EXIT_ERROR);
+	}
+	/*
+	 * creo una tabella di indici che puntano
+	 * all'inizio di ogni linea dello screen.
+	 */
+	for (b = 0; b < SCR_ROWS; b++) {
+		sb->line[b] = (WORD *)(sb->data + (b * SCR_COLUMNS));
+	}
+
+	return (EXIT_OK);
+}
 INLINE static void ppu_oam_evaluation(void) {
 /* ------------------------------- CONTROLLO SPRITE SCANLINE+1 ------------------------------- */
 	if (ppu.frame_x < 64) {

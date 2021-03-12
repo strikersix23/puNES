@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -2934,6 +2934,10 @@ static const _dbelement dblist[] = {
 	/* Gradius II (J) (VC).nes */
 	{"cf97e13a30b688eafdd0509b63e0228ea2185a25", 25, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, NODIPSWITCH, NOEXTRA},
 
+	/* AxelayNES.nes */
+	{"ab210c819a69026ec4d0ebcae630ecfc56669b9b", 27, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, NODIPSWITCH, NOEXTRA},
+	/* AxelayNES.nes */
+	{"dd8a615289e5508640a8c21922e3eddb272917d6", 27, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, NODIPSWITCH, NOEXTRA},
 	/* World Hero (Unl)(TV System Select)[!].nes */
 	{"0b351c586130ad0ae6203144136b6e199fa5ae20", 27, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, NODIPSWITCH, NOEXTRA},
 

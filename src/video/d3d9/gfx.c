@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *  for some codes :
  *  Copyright (C) 2010-2015 The RetroArch team
  *
@@ -52,31 +52,6 @@ BYTE gfx_init(void) {
 		return (EXIT_ERROR);
 	}
 
-	// inizializzo l'ntsc che utilizzero' non solo
-	// come filtro ma anche nel gfx_set_screen() per
-	// generare la paletta dei colori.
-	if (ntsc_init(0, 0, 0, 0, 0) == EXIT_ERROR) {
-		MessageBox(NULL, "Unable to initialize palette", "Error!", MB_ICONEXCLAMATION | MB_OK);
-		return (EXIT_ERROR);
-	}
-
-	// mi alloco una zona di memoria dove conservare la
-	// paletta nel formato di visualizzazione.
-	if (!(gfx.palette = malloc(NUM_COLORS * sizeof(uint32_t)))) {
-		MessageBox(NULL, "Unable to allocate the palette", "Error!", MB_ICONEXCLAMATION | MB_OK);
-		return (EXIT_ERROR);
-	}
-
-	if (pause_init() == EXIT_ERROR) {
-		MessageBox(NULL, "pause initialization failed", "Error!", MB_ICONEXCLAMATION | MB_OK);
-		return (EXIT_ERROR);
-	}
-
-	if (tv_noise_init() == EXIT_ERROR) {
-		MessageBox(NULL, "tv_noise initialization failed", "Error!", MB_ICONEXCLAMATION | MB_OK);
-		return (EXIT_ERROR);
-	}
-
 	// casi particolari provenienti dal settings_file_parse() e cmd_line_parse()
 	if (cfg->fullscreen == FULLSCR) {
 		gfx.scale_before_fscreen = cfg->scale;
@@ -108,6 +83,33 @@ void gfx_quit(void) {
 
 	d3d9_quit();
 }
+BYTE gfx_palette_init(void) {
+	// inizializzo l'ntsc che utilizzero' non solo
+	// come filtro ma anche nel gfx_set_screen() per
+	// generare la paletta dei colori.
+	if (ntsc_init(0, 0, 0, 0, 0) == EXIT_ERROR) {
+		return (EXIT_ERROR);
+	}
+
+	// mi alloco una zona di memoria dove conservare la
+	// paletta nel formato di visualizzazione.
+	if (!(gfx.palette = (uint32_t *)malloc(NUM_COLORS * sizeof(uint32_t)))) {
+		fprintf(stderr, "Unable to allocate the palette\n");
+		return (EXIT_ERROR);
+	}
+
+	if (pause_init() == EXIT_ERROR) {
+		fprintf(stderr, "pause initialization failed\n");
+		return (EXIT_ERROR);
+	}
+
+	if (tv_noise_init() == EXIT_ERROR) {
+		fprintf(stderr, "tv_noise initialization failed\n");
+		return (EXIT_ERROR);
+	}
+
+	return (EXIT_OK);
+}
 void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, BYTE palette, BYTE force_scale, BYTE force_palette) {
 	BYTE set_mode;
 	WORD width, height;
@@ -132,8 +134,8 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 	{
 		overscan.enabled = cfg->oscan;
 
-		gfx.rows = SCR_ROWS;
-		gfx.lines = SCR_LINES;
+		gfx.rows = SCR_COLUMNS;
+		gfx.lines = SCR_ROWS;
 
 		if (overscan.enabled == OSCAN_DEFAULT) {
 			overscan.enabled = cfg->oscan_default;
@@ -218,7 +220,7 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 	}
 	if ((scale != cfg->scale) || info.on_cfg || force_scale) {
 		if (filter == NTSC_FILTER) {
-			width = gfx.w[PASS0] = gfx.w[NO_OVERSCAN] = NES_NTSC_OUT_WIDTH(SCR_ROWS);
+			width = gfx.w[PASS0] = gfx.w[NO_OVERSCAN] = NES_NTSC_OUT_WIDTH(SCR_COLUMNS);
 			gfx.filter.width_pixel = (float)nes_ntsc_out_chunk / (float)nes_ntsc_in_chunk;
 			if (overscan.enabled) {
 				width -= ((float)(overscan.borders->left + overscan.borders->right) * gfx.filter.width_pixel);
@@ -235,8 +237,8 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 			}
 		} else {
 			width = gfx.rows * scale;
-			gfx.w[NO_OVERSCAN] = SCR_ROWS * scale;
-			gfx.w[PASS0] = SCR_ROWS * gfx.filter.factor;
+			gfx.w[NO_OVERSCAN] = SCR_COLUMNS * scale;
+			gfx.w[PASS0] = SCR_COLUMNS * gfx.filter.factor;
 			gfx.filter.width_pixel = gfx.filter.factor;
 			gfx.width_pixel = scale;
 		}
@@ -244,8 +246,8 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 
 		height = gfx.lines * scale;
 		gfx.h[CURRENT] = height;
-		gfx.h[NO_OVERSCAN] = SCR_LINES * scale;
-		gfx.h[PASS0] = SCR_LINES * gfx.filter.factor;
+		gfx.h[NO_OVERSCAN] = SCR_ROWS * scale;
+		gfx.h[PASS0] = SCR_ROWS * gfx.filter.factor;
 
 		set_mode = TRUE;
 	}
@@ -404,7 +406,7 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 				if (overscan.enabled && !cfg->oscan_black_borders) {
 					float brd = 0;
 
-					brd = (float)gfx.w[VIDEO_MODE] / (float)SCR_ROWS;
+					brd = (float)gfx.w[VIDEO_MODE] / (float)SCR_COLUMNS;
 					brd *= (overscan.borders->right + overscan.borders->left);
 
 					gfx.w[VIDEO_MODE] -= brd;
@@ -434,11 +436,11 @@ void gfx_set_screen(BYTE scale, DBWORD filter, DBWORD shader, BYTE fullscreen, B
 	// essere (256 x 240). Mi serve per calcolarmi la posizione del puntatore
 	// dello zapper.
 	if (cfg->fullscreen) {
-		gfx.w_pr = (float)gfx.vp.w / (float)SCR_ROWS;
-		gfx.h_pr = (float)gfx.vp.h / (float)SCR_LINES;
+		gfx.w_pr = (float)gfx.vp.w / (float)SCR_COLUMNS;
+		gfx.h_pr = (float)gfx.vp.h / (float)SCR_ROWS;
 	} else {
-		gfx.w_pr = (float)(gfx.w[NO_OVERSCAN] * gfx.pixel_aspect_ratio) / (float)SCR_ROWS;
-		gfx.h_pr = (float)gfx.h[NO_OVERSCAN] / (float)SCR_LINES;
+		gfx.w_pr = (float)(gfx.w[NO_OVERSCAN] * gfx.pixel_aspect_ratio) / (float)SCR_COLUMNS;
+		gfx.h_pr = (float)gfx.h[NO_OVERSCAN] / (float)SCR_ROWS;
 	}
 
 	gfx_thread_continue();

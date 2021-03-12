@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,14 @@
 #include "wdgStatusBar.hpp"
 #include "wdgToolBar.hpp"
 
+class qtHelper {
+	public:
+		static void widget_set_visible(void *wdg, bool mode);
+		static void pushbutton_set_checked(void *btn, bool mode);
+		static void checkbox_set_checked(void *cbox, bool mode);
+		static void slider_set_value(void *slider, int value);
+		static void spinbox_set_value(void *sbox, int value);
+};
 class timerEgds : public QTimer {
 		Q_OBJECT
 
@@ -121,7 +129,7 @@ class mainWindow : public QMainWindow, public Ui::mainWindow {
 		QTranslator *translator;
 		QTranslator *qtTranslator;
 		bool toggle_gui_in_window;
-		QRect geom;
+		QRect geom, mgeom;
 
 	public:
 		mainWindow();
@@ -159,6 +167,7 @@ class mainWindow : public QMainWindow, public Ui::mainWindow {
 		void shortcuts(void);
 		bool is_rwnd_shortcut_or_not_shcut(const QKeyEvent *event);
 		void update_gfx_monitor_dimension(void);
+		void set_save_slot_tooltip(BYTE slot, char *buffer);
 
 	private:
 		void connect_menu_signals(void);

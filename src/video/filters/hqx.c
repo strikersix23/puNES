@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ void hqx_init(void) {
 void hqNx(void) {
 	hqnx.sx = 0;
 	hqnx.sy = 0;
-	hqnx.lines = SCR_LINES;
-	hqnx.rows = SCR_ROWS;
+	hqnx.lines = SCR_ROWS;
+	hqnx.rows = SCR_COLUMNS;
 	hqnx.dst_rows = gfx.filter.data.width / gfx.filter.factor;
 	hqnx.startx = 0;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,10 +54,10 @@
 #include "gui.h"
 #include "video/effects/tv_noise.h"
 
-#define RS_SCALE (1.0f / (1.0f + RAND_MAX))
+#define RS_SCALE (1.0f / (1.0f + (float)RAND_MAX))
 
 #if defined (DEBUG)
-	WORD PCBREAK = 0xC425;
+WORD PCBREAK = 0xC425;
 #endif
 
 INLINE static void emu_frame_started(void);
@@ -658,6 +658,10 @@ BYTE emu_turn_on(void) {
 	nsf_init();
 	fds_init();
 
+	if (gfx_palette_init()) {
+		return (EXIT_ERROR);
+	}
+
 	// carico la rom in memoria
 	{
 		emu_ctrl_if_rom_exist();
@@ -1106,7 +1110,7 @@ INLINE static void emu_frame_finished(void) {
 
 	if (tas.lag_actual_frame) {
 		tas.total_lag_frames++;
-		gui_ppu_hacks_widgets_update();
+		gui_update_ppu_hacks_widgets();
 	}
 
 	if (snd_end_frame) {

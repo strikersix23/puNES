@@ -1,4 +1,5 @@
-/*  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+/*
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -134,8 +135,6 @@ class wdgPaletteEditor : public QWidget, public Ui::wdgPaletteEditor {
 		void palette_changed(void);
 
 	private:
-		void set_slider(QSlider *slider, int value);
-		void set_spin(QSpinBox *spin, int value);
 		void set_sliders_spins_lineedit(void);
 		void set_internal_color(int index, QColor qrgb, bool update_palette);
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <strings.h>
 #include "l7z.h"
-#include "lib7zip.h"
+#include "extra/lib7zip-88165f8/src/lib7zip.h"
 #include "info.h"
 #include "gui.h"
 
@@ -100,7 +100,7 @@ class in_stream: public C7ZipInStream {
 				return (EXIT_ERROR);
 			}
 
-			result = fseek(m_pFile, (long) offset, seekOrigin);
+			result = fseek(m_pFile, (long)offset, seekOrigin);
 
 			if (!result) {
 				if (newPosition) {

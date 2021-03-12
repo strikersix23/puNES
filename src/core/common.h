@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ enum reset_type {
 	POWER_UP    = 0x50
 };
 /* le dimesioni dello screen da renderizzare */
-enum screen_dimension { SCR_LINES = 240, SCR_ROWS = 256 };
+enum screen_dimension { SCR_ROWS = 240, SCR_COLUMNS = 256 };
 enum type_of_system_info { HEADER, DATABASE };
 enum header_type { iNES_1_0, NES_2_0, UNIF_FORMAT, FDS_FORMAT, NSF_FORMAT, NSFE_FORMAT };
 enum length_file_name_type {
@@ -64,7 +64,16 @@ enum length_file_name_type {
 };
 enum forced_mirroring { UNK_HORIZONTAL, UNK_VERTICAL };
 enum max_chips_rom { MAX_CHIPS = 8 };
-enum languages { LNG_ENGLISH, LNG_ITALIAN, LNG_RUSSIAN, LNG_SPANISH, LNG_HUNGARIAN, LNG_TURKISH, LNG_PORTUGUESEBR };
+enum languages {
+	LNG_ENGLISH,
+	LNG_ITALIAN,
+	LNG_RUSSIAN,
+	LNG_SPANISH,
+	LNG_HUNGARIAN,
+	LNG_TURKISH,
+	LNG_PORTUGUESEBR,
+	LNG_CHINESE_SIMPLIFIED
+};
 enum database_mode {
 	NODIPSWITCH = 0xFF00,
 	NOEXTRA = 0x0000,

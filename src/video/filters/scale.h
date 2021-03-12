@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,5 +23,6 @@
 
 void scale_surface(void);
 void scale_surface_screenshoot_1x(uint32_t pitch, void *pix);
+void scale_surface_preview_1x(void *sb, uint32_t pitch, void *pix);
 
 #endif /* SCALE_H_ */

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include "save_slot.h"
 #include "version.h"
 #include "cpu.h"
+#include "ppu.h"
 
 void overlay_wdg_clear(void *widget, void *qrect);
 void overlay_wdg_blit(void *widget);
@@ -93,6 +94,11 @@ static const char *info_messages_precompiled[] = {
 /* 27 */ QT_TRANSLATE_NOOP("overlayWidgetInfo", "[red]errors[normal] on shader, use [green]'No shader'[normal]"),
 };
 
+static struct _shared_color {
+	QColor rwnd_actual = QColor(Qt::blue);
+	QColor lag = Qt::red;
+	QColor no_lag = QColor(30, 128, 0);
+} shared_color;
 _overlay_data overlay;
 
 void gui_overlay_update(void) {
@@ -184,6 +190,7 @@ void gui_overlay_blit(void) {
 		overlay.widget->overlayTAS,
 		overlay.widget->overlayFloppy,
 		overlay.widget->overlayFPS,
+		overlay.widget->overlayFrame,
 		overlay.widget->overlaySaveSlot,
 		overlay.widget->overlayInputPort1,
 		overlay.widget->overlayInputPort2,
@@ -344,6 +351,7 @@ void wdgOverlayUi::update_widget(void) {
 
 	overlayInfo->update_widget();
 	overlayFPS->update_widget();
+	overlayFrame->update_widget();
 	overlayFloppy->update_widget();
 	overlayRewind->update_widget();
 	overlayTAS->update_widget();
@@ -468,6 +476,9 @@ void overlayWidget::fade_out_tick_timer(void) {
 		fade_out_animation();
 	}
 }
+QString overlayWidget::color_string(QString string, QColor color) {
+	return ("<font color='" + color.name().toUpper() + "'>" + string + "</font>");
+}
 
 void overlayWidget::s_fade_in_finished(void) {
 	set_opacity(opacity.value);
@@ -553,6 +564,67 @@ void overlayWidgetFloppy::update_widget(void) {
 	} else {
 		hide();
 	}
+}
+
+// overlayWidgetFrame --------------------------------------------------------------------------------------------------------------
+
+overlayWidgetFrame::overlayWidgetFrame(QWidget *parent) : overlayWidget(parent) {
+	old.actual_frame = 0;
+	td.setDefaultFont(font());
+	info();
+};
+overlayWidgetFrame::~overlayWidgetFrame() {}
+
+QSize overlayWidgetFrame::sizeHint() const {
+	return (QSize(td.size().width(), minimum_eight()));
+}
+void overlayWidgetFrame::paintEvent(QPaintEvent *event) {
+	QPainter painter(this);
+
+	overlayWidget::paintEvent(event);
+
+	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+	draw_background(&painter);
+
+	{
+		QAbstractTextDocumentLayout::PaintContext ctx;
+
+		painter.translate(0.0f, (height() - td.size().height()) / 2.0f);
+
+		ctx.clip = rect();
+		td.documentLayout()->draw(&painter, ctx);
+	}
+}
+
+void overlayWidgetFrame::update_widget(void) {
+	if (cfg->txt_on_screen & cfg->show_frames_and_lags & !rwnd.active & (tas.type == NOTAS)) {
+		show_widget();
+	} else {
+		hide();
+	}
+}
+BYTE overlayWidgetFrame::is_to_redraw(void) {
+	if (ppu.frames != old.actual_frame) {
+		info();
+		setMinimumWidth(td.size().width());
+		return (TRUE);
+	}
+	return (FALSE);
+}
+void overlayWidgetFrame::update_old_value(void) {
+	old.actual_frame = ppu.frames;
+}
+
+void overlayWidgetFrame::info(void) {
+	QString txt = "";
+
+	txt += color_string("F : ", base_color.fg);
+	txt += color_string(QString("%1").arg(old.actual_frame), tas.lag_actual_frame ? shared_color.lag : shared_color.rwnd_actual);
+	txt += color_string(" L : ", base_color.fg);
+	txt += color_string(QString("%1").arg(tas.total_lag_frames), tas.lag_actual_frame ? shared_color.lag : shared_color.no_lag);
+
+	td.setHtml(txt);
 }
 
 // overlayWidgetInputPort --------------------------------------------------------------------------------------------------------
@@ -826,13 +898,13 @@ void overlayWidgetInputPort::draw_mouse_coords(QPainter *painter) {
 	input_read_mouse_coords(&x, &y);
 	if (x < 0) {
 		x = 0;
-	} else if (x >= SCR_ROWS) {
-		x = SCR_ROWS - 1;
+	} else if (x >= SCR_COLUMNS) {
+		x = SCR_COLUMNS - 1;
 	}
 	if (y < 0) {
 		y = 0;
-	} else if (y > SCR_LINES - 1) {
-		y = SCR_LINES -1;
+	} else if (y > SCR_ROWS - 1) {
+		y = SCR_ROWS -1;
 	}
 	painter->setPen(Qt::white);
 	painter->drawText(20, 26, QString("x: %1").arg(x, 3));
@@ -844,10 +916,13 @@ void overlayWidgetInputPort::draw_mouse_coords(QPainter *painter) {
 overlayWidgetRewind::overlayWidgetRewind(QWidget *parent) : overlayWidget(parent) {
 	led = QFont("Digital Counter 7");
 
+	led.setPointSizeF(font().pointSizeF());
+	td.setDefaultFont(led);
+
 	color.corner = QColor(234, 234, 184);
 	color.border_bar = QColor(100, 100, 100);
 	color.bar = QColor(224, 255, 224);
-	color.actual = QColor(Qt::blue);
+	color.actual = shared_color.rwnd_actual;
 	color.total = QColor(128, 0, 0);
 	color.disabled = QColor(180, 180, 180);
 
@@ -901,9 +976,6 @@ void overlayWidgetRewind::update_old_value(void) {
 	old.action_before_pause = rwnd.action_before_pause;
 	old.actual_frame = rewind_snap_cursor();
 	old.max_frames = rewind_count_snaps();
-}
-QString overlayWidgetRewind::color_string(QString string, QColor color) {
-	return ("<font color='" + color.name().toUpper() + "'>" + string + "</font>");
 }
 QString overlayWidgetRewind::seconds_to_string(_infotime *itime, _infotime::_measure max, QColor color) {
 	QColor disabled = this->color.disabled;
@@ -1080,11 +1152,6 @@ void overlayWidgetRewind::draw_corner_bar_info(QPainter *painter) {
 
 	{
 		QAbstractTextDocumentLayout::PaintContext ctx;
-		QTextDocument td;
-		QFont f = led;
-
-		f.setPointSizeF(font().pointSizeF());
-		td.setDefaultFont(f);
 
 		td.setHtml(info_long());
 
@@ -1152,7 +1219,6 @@ QImage overlayWidgetRewind::svg_to_image(QString resource) {
 overlayWidgetTAS::overlayWidgetTAS(QWidget *parent) : overlayWidgetRewind(parent) {
 	color.corner = QColor(211, 215, 207);
 	color.bar = Qt::white;
-	lag_color = Qt::red;
 };
 overlayWidgetTAS::~overlayWidgetTAS() {}
 
@@ -1200,11 +1266,11 @@ QString overlayWidgetTAS::info_long(void) {
 	txt += color_string("/", base_color.fg);
 	txt += seconds_to_string(&itmax, itmax.max, color.total);
 	txt += color_string(" (", base_color.fg);
-	txt += color_string(QString("%1").arg(old.actual_frame), tas.lag_actual_frame ? lag_color : color.actual);
+	txt += color_string(QString("%1").arg(old.actual_frame), tas.lag_actual_frame ? shared_color.lag : color.actual);
 	txt += color_string("/", base_color.fg);
 	txt += color_string(QString("%1").arg(old.max_frames), color.total);
 	txt += color_string(" [", base_color.fg);
-	txt += color_string(QString("%1").arg(tas.total_lag_frames), tas.lag_actual_frame ? lag_color : QColor(30, 128, 0));
+	txt += color_string(QString("%1").arg(tas.total_lag_frames), tas.lag_actual_frame ? shared_color.lag : shared_color.no_lag);
 	txt += color_string("])", base_color.fg);
 
 	return (txt);
@@ -1212,11 +1278,11 @@ QString overlayWidgetTAS::info_long(void) {
 QString overlayWidgetTAS::info_short(void) {
 	QString txt = "";
 
-	txt += color_string(QString("%1").arg(old.actual_frame), tas.lag_actual_frame ? lag_color : color.actual);
+	txt += color_string(QString("%1").arg(old.actual_frame), tas.lag_actual_frame ? shared_color.lag : color.actual);
 	txt += color_string("/", base_color.fg);
 	txt += color_string(QString("%1").arg(old.max_frames), color.total);
 	txt += color_string(" [", base_color.fg);
-	txt += color_string(QString("%1").arg(tas.total_lag_frames), tas.lag_actual_frame ? lag_color : color.actual);
+	txt += color_string(QString("%1").arg(tas.total_lag_frames), tas.lag_actual_frame ? shared_color.lag : color.actual);
 	txt += color_string("]", base_color.fg);
 
 	return (txt);
@@ -1245,11 +1311,9 @@ void overlayWidgetSaveSlot::paintEvent(QPaintEvent *event) {
 }
 
 void overlayWidgetSaveSlot::enable_overlay(BYTE operation) {
-	//if (cfg->fullscreen == FULLSCR) {
-		save_slot_operation = operation;
-		fade_out_start_timer();
-		enabled = TRUE;
-	//}
+	save_slot_operation = operation;
+	fade_out_start_timer();
+	enabled = TRUE;
 }
 
 void overlayWidgetSaveSlot::draw_slots(QPainter *painter) {

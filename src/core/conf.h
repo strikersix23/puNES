@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ typedef struct _config {
 	BYTE input_rotation;
 	BYTE text_rotation;
 	BYTE show_fps;
+	BYTE show_frames_and_lags;
 	BYTE input_display;
 	BYTE disable_tv_noise;
 	BYTE disable_sepia_color;
@@ -91,6 +92,7 @@ typedef struct _config {
 	_config_apu apu;
 #if defined (WITH_FFMPEG)
 	struct _config_recording {
+		BYTE last_type;
 		BYTE audio_format;
 		BYTE video_format;
 		BYTE quality;

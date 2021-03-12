@@ -9,6 +9,17 @@
     </message>
   </context>
   <context>
+    <name>dlgCmdLineHelp</name>
+    <message>
+      <source>Close</source>
+      <translation>Kapat</translation>
+    </message>
+    <message>
+      <source>Command Line Help</source>
+      <translation>Komut Satırı Yardımı</translation>
+    </message>
+  </context>
+  <context>
     <name>dlgSettings</name>
     <message>
       <source>Settings</source>
@@ -73,6 +84,10 @@
     <message>
       <source>Rewind Fast Backward</source>
       <translation>Hızlı Geri Sarma</translation>
+    </message>
+    <message>
+      <source>Recording</source>
+      <translation>Kayıt</translation>
     </message>
   </context>
   <context>
@@ -603,10 +618,6 @@
       <translation>UNIF rom dosyaları</translation>
     </message>
     <message>
-      <source>Start/Stop &amp;WAV recording</source>
-      <translation>&amp;WAV kaydını başlat/durdur</translation>
-    </message>
-    <message>
       <source>Stop &amp;WAV recording</source>
       <translation>&amp;WAV kaydını durdur</translation>
     </message>
@@ -669,6 +680,39 @@
     <message>
       <source>Widgets</source>
       <translation>Araçlar</translation>
+    </message>
+    <message>
+      <source>Start &amp;AUDIO recording</source>
+      <translation>&amp;SES kaydını başlat</translation>
+    </message>
+    <message>
+      <source>Start &amp;VIDEO recording</source>
+      <translation>&amp;VIDEO kaydını başlat</translation>
+    </message>
+    <message>
+      <source>Stop &amp;AUDIO recording</source>
+      <translation>&amp;SES kaydını durdur</translation>
+    </message>
+    <message>
+      <source>Stop &amp;VIDEO recording</source>
+      <translation>&amp;VIDEO kaydını durdur</translation>
+    </message>
+    <message>
+      <source>Start/Stop &amp;AUDIO recording</source>
+      <translation>&amp;SES kaydını başlat/durdur</translation>
+    </message>
+    <message>
+      <source>&amp;Recording</source>
+      <translation>&amp;Kayıt</translation>
+    </message>
+    <message>
+      <source>Start/Stop &amp;VIDEO recording</source>
+      <translation>&amp;VIDEO kaydını başlat/durdur</translation>
+    </message>
+    <message>
+      <source>Slot %1 never used</source>
+      <extracomment>Refers to the unused save slot. Important: Do not translate the &quot;%1&quot;.</extracomment>
+      <translation>Slot %1 hiç kullanılmadı</translation>
     </message>
   </context>
   <context>
@@ -830,6 +874,17 @@
     </message>
   </context>
   <context>
+    <name>recStatusBar</name>
+    <message>
+      <source>Audio</source>
+      <translation>Ses</translation>
+    </message>
+    <message>
+      <source>Video</source>
+      <translation>Video</translation>
+    </message>
+  </context>
+  <context>
     <name>wdgAPUChannels</name>
     <message>
       <source>APU Channels</source>
@@ -893,10 +948,6 @@
     <message>
       <source>Cheats List</source>
       <translation>Hile Listesi</translation>
-    </message>
-    <message>
-      <source>Active</source>
-      <translation>Etkin</translation>
     </message>
     <message>
       <source>Description</source>
@@ -1082,6 +1133,37 @@
     </message>
   </context>
   <context>
+    <name>wdgRecGetSaveFileName</name>
+    <message>
+      <source>Record AUDIO on file</source>
+      <translation>SES'i dosyaya kaydedin</translation>
+    </message>
+    <message>
+      <source>Output Quality</source>
+      <translation>Çıktı Kalitesi</translation>
+    </message>
+    <message>
+      <source>Low</source>
+      <translation>Düşük</translation>
+    </message>
+    <message>
+      <source>Medium</source>
+      <translation>Orta</translation>
+    </message>
+    <message>
+      <source>High</source>
+      <translation>Yüksek</translation>
+    </message>
+    <message>
+      <source>Record VIDEO on file</source>
+      <translation>VIDEO'yu dosyaya kaydedin</translation>
+    </message>
+    <message>
+      <source>Not supported</source>
+      <translation>Desteklenmiyor</translation>
+    </message>
+  </context>
+  <context>
     <name>wdgRewind</name>
     <message>
       <source>Forward (single frame)</source>
@@ -1127,8 +1209,8 @@
       <translation>Mevcut dönme derecesi</translation>
     </message>
     <message>
-      <source>Rotate Screen</source>
-      <translation>Ekranı döndür</translation>
+      <source>Rotate Screen :</source>
+      <translation>Ekranı döndür :</translation>
     </message>
   </context>
   <context>
@@ -1136,62 +1218,6 @@
     <message>
       <source>Output Devices</source>
       <translation>Çıktı cihazları</translation>
-    </message>
-    <message>
-      <source>48000</source>
-      <translation>48000</translation>
-    </message>
-    <message>
-      <source>44100</source>
-      <translation>44100</translation>
-    </message>
-    <message>
-      <source>22050</source>
-      <translation>22050</translation>
-    </message>
-    <message>
-      <source>11025</source>
-      <translation>11025</translation>
-    </message>
-    <message>
-      <source>0</source>
-      <translation>0</translation>
-    </message>
-    <message>
-      <source>1 (Default)</source>
-      <translation>%1 (Varsayılan)</translation>
-    </message>
-    <message>
-      <source>2</source>
-      <translation>2</translation>
-    </message>
-    <message>
-      <source>3</source>
-      <translation>3</translation>
-    </message>
-    <message>
-      <source>4</source>
-      <translation>4</translation>
-    </message>
-    <message>
-      <source>5</source>
-      <translation>5</translation>
-    </message>
-    <message>
-      <source>6</source>
-      <translation>6</translation>
-    </message>
-    <message>
-      <source>7</source>
-      <translation>7</translation>
-    </message>
-    <message>
-      <source>8</source>
-      <translation>8</translation>
-    </message>
-    <message>
-      <source>9</source>
-      <translation>9</translation>
     </message>
     <message>
       <source>Sample Rate</source>
@@ -1230,86 +1256,6 @@
       <translation>Kanallar</translation>
     </message>
     <message>
-      <source>5%</source>
-      <translation>5%</translation>
-    </message>
-    <message>
-      <source>10%</source>
-      <translation>10%</translation>
-    </message>
-    <message>
-      <source>15%</source>
-      <translation>15%</translation>
-    </message>
-    <message>
-      <source>20%</source>
-      <translation>20%</translation>
-    </message>
-    <message>
-      <source>25%</source>
-      <translation>25%</translation>
-    </message>
-    <message>
-      <source>30% (Default)</source>
-      <translation>30% (Varsayılan)</translation>
-    </message>
-    <message>
-      <source>35%</source>
-      <translation>35%</translation>
-    </message>
-    <message>
-      <source>40%</source>
-      <translation>40%</translation>
-    </message>
-    <message>
-      <source>45%</source>
-      <translation>45%</translation>
-    </message>
-    <message>
-      <source>50%</source>
-      <translation>50%</translation>
-    </message>
-    <message>
-      <source>55%</source>
-      <translation>55%</translation>
-    </message>
-    <message>
-      <source>60%</source>
-      <translation>60%</translation>
-    </message>
-    <message>
-      <source>65%</source>
-      <translation>65%</translation>
-    </message>
-    <message>
-      <source>70%</source>
-      <translation>70%</translation>
-    </message>
-    <message>
-      <source>75%</source>
-      <translation>75%</translation>
-    </message>
-    <message>
-      <source>80%</source>
-      <translation>80%</translation>
-    </message>
-    <message>
-      <source>85%</source>
-      <translation>85%</translation>
-    </message>
-    <message>
-      <source>90%</source>
-      <translation>90%</translation>
-    </message>
-    <message>
-      <source>95%</source>
-      <translation>95%</translation>
-    </message>
-    <message>
-      <source>100%</source>
-      <translation>100%</translation>
-    </message>
-    <message>
       <source>APU Channels</source>
       <translation>APU Kanalları</translation>
     </message>
@@ -1320,6 +1266,26 @@
     <message>
       <source>Enable Audio</source>
       <translation>Sesi Etkinleştir</translation>
+    </message>
+    <message>
+      <source>Reverse bits of DPCM</source>
+      <translation>DPCM'nin bitleri ters çevir</translation>
+    </message>
+    <message>
+      <source>48.0 kHz</source>
+      <translation>48.0 kHz</translation>
+    </message>
+    <message>
+      <source>44.1 kHz</source>
+      <translation>44.1 kHz</translation>
+    </message>
+    <message>
+      <source>22.05 kHz</source>
+      <translation>22.05 kHz</translation>
+    </message>
+    <message>
+      <source>11.025 kHz</source>
+      <translation>11.025 kHz</translation>
     </message>
   </context>
   <context>
@@ -1366,10 +1332,6 @@
     <message>
       <source>General Settings</source>
       <translation>Genel Ayarlar</translation>
-    </message>
-    <message>
-      <source>2x (Default)</source>
-      <translation>2x (Varsayılan)</translation>
     </message>
     <message>
       <source>3x</source>
@@ -1460,30 +1422,6 @@
       <translation>Geri Sarma dakikaları</translation>
     </message>
     <message>
-      <source>Disabled</source>
-      <translation>Devre Dışı</translation>
-    </message>
-    <message>
-      <source>2 minutes</source>
-      <translation>2 dakika</translation>
-    </message>
-    <message>
-      <source>5 minutes</source>
-      <translation>5 dakika</translation>
-    </message>
-    <message>
-      <source>15 minutes (Default)</source>
-      <translation>15 dakika (Varsayılan)</translation>
-    </message>
-    <message>
-      <source>30 minutes</source>
-      <translation>30 dakika</translation>
-    </message>
-    <message>
-      <source>Unlimited</source>
-      <translation>Sınırsız</translation>
-    </message>
-    <message>
       <source>Spanish</source>
       <translation>İspanyolca</translation>
     </message>
@@ -1492,16 +1430,44 @@
       <translation>Macarca</translation>
     </message>
     <message>
-      <source>60 minutes</source>
-      <translation>60 dakika</translation>
-    </message>
-    <message>
       <source>Turkish</source>
       <translation>Türkçe</translation>
     </message>
     <message>
       <source>Portuguese (Brazil)</source>
       <translation>Portekizce (Brezilya)</translation>
+    </message>
+    <message>
+      <source>Off</source>
+      <translation>Kapat</translation>
+    </message>
+    <message>
+      <source>2</source>
+      <translation>2</translation>
+    </message>
+    <message>
+      <source>5</source>
+      <translation>5</translation>
+    </message>
+    <message>
+      <source>15</source>
+      <translation>15</translation>
+    </message>
+    <message>
+      <source>30</source>
+      <translation>30</translation>
+    </message>
+    <message>
+      <source>60</source>
+      <translation>60</translation>
+    </message>
+    <message>
+      <source>Unlim.</source>
+      <translation>Limitsiz.</translation>
+    </message>
+    <message>
+      <source>2x</source>
+      <translation>2x</translation>
     </message>
   </context>
   <context>
@@ -1539,10 +1505,6 @@
       <translation>Tanımlamayı kaldır</translation>
     </message>
     <message>
-      <source>Start/Stop WAV</source>
-      <translation>Çalıştır/Durdur WAV</translation>
-    </message>
-    <message>
       <source>No usable device</source>
       <translation>Kullanılabilir aygıt yok</translation>
     </message>
@@ -1561,10 +1523,6 @@
     <message>
       <source>Input Settings</source>
       <translation>Giriş ayarları</translation>
-    </message>
-    <message>
-      <source>Setup</source>
-      <translation>Kurulum</translation>
     </message>
     <message>
       <source>Joystick ID</source>
@@ -1646,6 +1604,22 @@
       <source>Unset all</source>
       <translation>Tüm Tanımlamaları Kaldır</translation>
     </message>
+    <message>
+      <source>Start/Stop AUDIO recording</source>
+      <translation>SES kaydını başlat/durdur</translation>
+    </message>
+    <message>
+      <source>Start/Stop VIDEO recording</source>
+      <translation>VIDEO kaydını başlat/durdur</translation>
+    </message>
+    <message>
+      <source>Start/Stop WAV recording</source>
+      <translation>WAV kaydını başlat/durdur</translation>
+    </message>
+    <message>
+      <source>Standard Pads on Port3 and Port4</source>
+      <translation>Port3 ve Port4'teki Standart Kumandalar</translation>
+    </message>
   </context>
   <context>
     <name>wdgSettingsPPU</name>
@@ -1692,6 +1666,215 @@
     <message>
       <source>Hide Background</source>
       <translation>Arkaplanı gizle</translation>
+    </message>
+  </context>
+  <context>
+    <name>wdgSettingsRecording</name>
+    <message>
+      <source>MPEG 1 Video (*.mpg *.mpeg)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>MPEG 1 Video (*.mpg *.mpeg)</translation>
+    </message>
+    <message>
+      <source>MPEG 2 Video (*.mpg *.mpeg)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>MPEG 2 Video (*.mpg *.mpeg)</translation>
+    </message>
+    <message>
+      <source>MPEG 4 Video (*.mp4)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>MPEG 4 Video (*.mp4)</translation>
+    </message>
+    <message>
+      <source>MPEG H264 Video (*.mp4)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>MPEG H264 Video (*.mp4)</translation>
+    </message>
+    <message>
+      <source>High Efficiency Video Codec (*.mkv)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>Yüksek Verimli Video Codec (* .mkv)</translation>
+    </message>
+    <message>
+      <source>WebM Video (*.webm)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>WebM Video (*.webm)</translation>
+    </message>
+    <message>
+      <source>Windows Media Video (*.wmv)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>Windows Media Video (*.wmv)</translation>
+    </message>
+    <message>
+      <source>AVI FF Video (*.avi)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>AVI FF Video (*.avi)</translation>
+    </message>
+    <message>
+      <source>AVI Video (*.avi)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>AVI Video (*.avi)</translation>
+    </message>
+    <message>
+      <source>WAV Audio (*.wav)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>WAV Ses (*.wav)</translation>
+    </message>
+    <message>
+      <source>MP3 Audio (*.mp3)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>MP3 Ses (*.mp3)</translation>
+    </message>
+    <message>
+      <source>AAC Audio (*.aac)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>AAC Ses (*.aac)</translation>
+    </message>
+    <message>
+      <source>Flac Audio (*.flac)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>Flac Ses (*.flac)</translation>
+    </message>
+    <message>
+      <source>Ogg Audio (*.ogg)</source>
+      <extracomment>Do not translate file extensions contained between parentheses [example: (*.mp3)]</extracomment>
+      <translation>Ogg Ses (*.ogg)</translation>
+    </message>
+    <message>
+      <source>Not supported</source>
+      <translation>Desteklenmiyor</translation>
+    </message>
+    <message>
+      <source>Custom Height</source>
+      <translation>Özel Yükseklik</translation>
+    </message>
+    <message>
+      <source>Output Video Format</source>
+      <translation>Video Çıktı Formatı</translation>
+    </message>
+    <message>
+      <source>Custom Width</source>
+      <translation>Özel Genişlik</translation>
+    </message>
+    <message>
+      <source>Output Quality</source>
+      <translation>Çıktı Kalitesi</translation>
+    </message>
+    <message>
+      <source>Output Audio Format</source>
+      <translation>Ses Çıktı Formatı</translation>
+    </message>
+    <message>
+      <source>Output Resolution</source>
+      <translation>Çıkış Çözünürlüğü</translation>
+    </message>
+    <message>
+      <source>Custom</source>
+      <translation>Özel</translation>
+    </message>
+    <message>
+      <source>256 x 240  (1:1)</source>
+      <translation>256 x 240  (1:1)</translation>
+    </message>
+    <message>
+      <source>292 x 240  (8:7 NTSC TV)</source>
+      <translation>292 x 240  (8:7 NTSC TV)</translation>
+    </message>
+    <message>
+      <source>320 x 240  (5:4)</source>
+      <translation>320 x 240  (5:4)</translation>
+    </message>
+    <message>
+      <source>354 x 240  (11:8 PAL TV)</source>
+      <translation>354 x 240  (11:8 PAL TV)</translation>
+    </message>
+    <message>
+      <source>512 x 480  (1:1)</source>
+      <translation>512 x 480  (1:1)</translation>
+    </message>
+    <message>
+      <source>584 x 480  (8:7 NTSC TV)</source>
+      <translation>584 x 480  (8:7 NTSC TV)</translation>
+    </message>
+    <message>
+      <source>640 x 480  (5:4)</source>
+      <translation>640 x 480  (5:4)</translation>
+    </message>
+    <message>
+      <source>708 x 480  (11:8 PAL TV)</source>
+      <translation>708 x 480  (11:8 PAL TV)</translation>
+    </message>
+    <message>
+      <source>768 x 720  (1:1)</source>
+      <translation>768 x 720  (1:1)</translation>
+    </message>
+    <message>
+      <source>876 x 720  (8:7 NTSC TV)</source>
+      <translation>876 x 720  (8:7 NTSC TV)</translation>
+    </message>
+    <message>
+      <source>960 x 720  (5:4)</source>
+      <translation>960 x 720  (5:4)</translation>
+    </message>
+    <message>
+      <source>1064 x 720  (11:8 PAL TV)</source>
+      <translation>1064 x 720  (11:8 PAL TV)</translation>
+    </message>
+    <message>
+      <source>1024 x 960  (1:1)</source>
+      <translation>1024 x 960  (1:1)</translation>
+    </message>
+    <message>
+      <source>1170 x 960  (8:7 NTSC TV)</source>
+      <translation>1170 x 960  (8:7 NTSC TV)</translation>
+    </message>
+    <message>
+      <source>1280 x 960  (5:4)</source>
+      <translation>1280 x 960  (5:4)</translation>
+    </message>
+    <message>
+      <source>1418 x 960  (11:8 PAL TV)</source>
+      <translation>1418 x 960  (11:8 PAL TV)</translation>
+    </message>
+    <message>
+      <source>1280 x 720</source>
+      <translation>1280 x 720</translation>
+    </message>
+    <message>
+      <source>1920 x 1080</source>
+      <translation>1920 x 1080</translation>
+    </message>
+    <message>
+      <source>Use the emulator resolution</source>
+      <translation>Emülatör çözünürlüğünü kullanın</translation>
+    </message>
+    <message>
+      <source>Follow screen rotation</source>
+      <translation>Ekran döndürmeyi takip edin</translation>
+    </message>
+    <message>
+      <source>Low</source>
+      <translation>Düşük</translation>
+    </message>
+    <message>
+      <source>Medium</source>
+      <translation>Orta</translation>
+    </message>
+    <message>
+      <source>High</source>
+      <translation>Yüksek</translation>
+    </message>
+    <message>
+      <source>Audio recording settings</source>
+      <translation>Ses kayıt ayarları</translation>
+    </message>
+    <message>
+      <source>Video recording settings</source>
+      <translation>Video kayıt ayarları</translation>
+    </message>
+    <message>
+      <source>Recording Settings</source>
+      <translation>Kayıt Ayarları</translation>
     </message>
   </context>
   <context>
@@ -1765,10 +1948,6 @@
       <translation>Ölçek</translation>
     </message>
     <message>
-      <source>Settings</source>
-      <translation>Ayarlar</translation>
-    </message>
-    <message>
       <source>** To apply this change restart is needed **</source>
       <translation>** Bu değişikliği uygulamak için yeniden başlatma gerekir **</translation>
     </message>
@@ -1807,10 +1986,6 @@
     <message>
       <source>Default Value</source>
       <translation>Varsayılan Değer</translation>
-    </message>
-    <message>
-      <source>Overscan borders</source>
-      <translation>Geniş Tarama Kenarları</translation>
     </message>
     <message>
       <source>NTSC</source>
@@ -1949,14 +2124,6 @@
       <translation>NTSC RGB</translation>
     </message>
     <message>
-      <source>Shaders</source>
-      <translation>Gölgelendiriciler</translation>
-    </message>
-    <message>
-      <source>Load from a file</source>
-      <translation>Dosyadan yükle</translation>
-    </message>
-    <message>
       <source>Shader Parameters</source>
       <translation>Gölgelendirici Parametreleri</translation>
     </message>
@@ -2073,10 +2240,6 @@
       <translation>Tam ekranda tam sayı ölçeklendirmeyi kullanın</translation>
     </message>
     <message>
-      <source>Screen rotation</source>
-      <translation>Ekran döndürme</translation>
-    </message>
-    <message>
       <source>0 degrees</source>
       <translation>0 derece</translation>
     </message>
@@ -2093,8 +2256,60 @@
       <translation>270 derece</translation>
     </message>
     <message>
-      <source>Also rotate the text on screen</source>
-      <translation>Also rotate the text on screen</translation>
+      <source>Raw</source>
+      <translation>Ham</translation>
+    </message>
+    <message>
+      <source>Horizontal flip</source>
+      <translation>Yatay çevirme</translation>
+    </message>
+    <message>
+      <source>Flip/Rotate the controller input</source>
+      <translation>Denetleyici girişini çevirin/döndürün</translation>
+    </message>
+    <message>
+      <source>Flip/Rotate the text on screen</source>
+      <translation>Ekrandaki metni çevirin/döndürün</translation>
+    </message>
+    <message>
+      <source>Per-Game Overscan Setting</source>
+      <translation>Oyun Başına Fazla Tarama Ayarı</translation>
+    </message>
+    <message>
+      <source>Horizontal Flip and Rotation</source>
+      <translation>Yatay Çevirme ve Döndürme</translation>
+    </message>
+    <message>
+      <source>Screen</source>
+      <translation>Ekran</translation>
+    </message>
+    <message>
+      <source>Software Filters</source>
+      <translation>Yazılım Filtreleri</translation>
+    </message>
+    <message>
+      <source>Shader</source>
+      <translation>Gölgelendirici</translation>
+    </message>
+    <message>
+      <source>Shader File</source>
+      <translation>Gölgelendirici Dosyası</translation>
+    </message>
+    <message>
+      <source>Filter</source>
+      <translation>Filtre</translation>
+    </message>
+    <message>
+      <source>GPU Shaders</source>
+      <translation>GPU Gölgelendiricileri</translation>
+    </message>
+    <message>
+      <source>Palette Selection</source>
+      <translation>Palet Seçimi</translation>
+    </message>
+    <message>
+      <source>Palette File</source>
+      <translation>Palet dosyası</translation>
     </message>
   </context>
   <context>
@@ -2102,10 +2317,6 @@
     <message>
       <source>Save/Load Slot Box</source>
       <translation>Kaydet/Yükle Yuva Kutusu</translation>
-    </message>
-    <message>
-      <source>Slot %1</source>
-      <translation>Yuva %1</translation>
     </message>
     <message>
       <source>Save state</source>

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 void xBRZ_init(void) {}
 void xBRZ(void) {
 	xbrz_scale(gfx.filter.factor, screen.rd->data, (uint32_t *)gfx.filter.data.pix, (uint32_t *)gfx.filter.data.palette,
-		SCR_ROWS, SCR_LINES);
+		SCR_COLUMNS, SCR_ROWS);
 }
 void xBRZ_mt(void) {
 	xbrz_scale_mt(gfx.filter.factor, screen.rd->data, (uint32_t *)gfx.filter.data.pix, (uint32_t *)gfx.filter.data.palette,
-		SCR_ROWS, SCR_LINES);
+		SCR_COLUMNS, SCR_ROWS);
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,10 +50,10 @@ class dlgSettings : public QDialog, public Ui::dlgSettings {
 		void update_tab_input(void);
 		void update_tab_ppu(void);
 		void update_tab_cheats(void);
-		void update_tab_recording(void);
 
 	public:
 		void update_tab_audio(void);
+		void update_tab_recording(void);
 
 	private slots:
 		void s_save_settings(bool checked);

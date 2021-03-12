@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
 #define VER1        "0"
 #define VER1_INT    0
 
-#define VER2        "107"
-#define VER2_INT    107
+#define VER2        "108"
+#define VER2_INT    108
 
 #if defined (RELEASE) && !defined (WITH_GIT_INFO)
 #define VERSION     VER1 "." VER2
@@ -37,9 +37,10 @@
 #define AUTHOR      "FHorse"
 #define WEBSITE     "http://forums.nesdev.com/viewtopic.php?f=3&amp;t=6928"
 #define GITHUB      "https://github.com/punesemu/puNES"
+#define GITLAB      "https://gitlab.com/FHorse/puNES"
 #define DONATE      "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QPPXNRL5NAHDC"
 
-#define COPYRIGTH   " 2020 by " AUTHOR
+#define COPYRIGTH   " 2021 by " AUTHOR
 #define COPYRANSI   "(C)" COPYRIGTH
 #define COPYRUTF8   "&#169;" COPYRIGTH
 

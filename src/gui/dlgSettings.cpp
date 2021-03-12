@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@ dlgSettings::dlgSettings(QWidget *parent) : QDialog(parent) {
 #if !defined (WITH_FFMPEG)
 	tabWidget_Settings->removeTab(6);
 #endif
-
-	adjustSize();
 
 	installEventFilter(this);
 }
@@ -84,12 +82,13 @@ void dlgSettings::update_dialog(void) {
 	update_tab_input();
 	update_tab_ppu();
 	update_tab_cheats();
+	update_tab_recording();
 }
 void dlgSettings::change_rom(void) {
 	widget_Settings_Video->change_rom();
 }
 void dlgSettings::shcut_mode(int mode) {
-	widget_Settings_General->s_mode(mode);
+	widget_Settings_General->shcut_mode(mode);
 }
 void dlgSettings::shcut_scale(int scale) {
 	widget_Settings_Video->shcut_scale(scale + 1);
@@ -113,6 +112,11 @@ void dlgSettings::update_tab_cheats(void) {
 
 void dlgSettings::update_tab_audio(void) {
 	widget_Settings_Audio->update_widget();
+}
+void dlgSettings::update_tab_recording(void) {
+#if defined (WITH_FFMPEG)
+	widget_Settings_Recording->update_widget();
+#endif
 }
 
 void dlgSettings::s_save_settings(UNUSED(bool checked)) {

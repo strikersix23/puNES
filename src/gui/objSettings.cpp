@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -701,6 +701,7 @@ void objSet::to_cfg(QString group) {
 		int_to_val(SET_INTERPOLATION, cfg_from_file.interpolation);
 		int_to_val(SET_TEXT_ON_SCREEN, cfg_from_file.txt_on_screen);
 		int_to_val(SET_SHOW_FPS, cfg_from_file.show_fps);
+		int_to_val(SET_SHOW_FRAMES_AND_LAGS, cfg_from_file.show_frames_and_lags);
 		int_to_val(SET_INPUT_DISPLAY, cfg_from_file.input_display);
 		int_to_val(SET_DISABLE_TV_NOISE, cfg_from_file.disable_tv_noise);
 		int_to_val(SET_DISABLE_SEPIA_PAUSE, cfg_from_file.disable_sepia_color);
@@ -736,6 +737,11 @@ void objSet::to_cfg(QString group) {
 		int_to_val(SET_GUI_LANGUAGE, cfg_from_file.language);
 		int_to_val(SET_GUI_TOOLBAR_AREA, cfg_from_file.toolbar.area);
 		int_to_val(SET_GUI_TOOLBAR_HIDDEN, cfg_from_file.toolbar.hidden);
+#if defined (WITH_FFMPEG)
+		int_to_val(SET_GUI_REC_LAST_TYPE, cfg_from_file.recording.last_type);
+		cpy_utchar_to_val(SET_GUI_REC_LAST_VIDEO_PATH, cfg_from_file.last_rec_video_path);
+#endif
+		cpy_utchar_to_val(SET_GUI_REC_LAST_AUDIO_PATH, cfg_from_file.last_rec_audio_path);
 	}
 
 	if ((group == "apu channels") || (group == "all")) {
@@ -760,8 +766,8 @@ void objSet::to_cfg(QString group) {
 		int_to_val(SET_NSF_PLAYER_NSFE_FADEOUT, cfg_from_file.nsf_player_nsfe_fadeout);
 	}
 
-	if ((group == "recording") || (group == "all")) {
 #if defined (WITH_FFMPEG)
+	if ((group == "recording") || (group == "all")) {
 		int_to_val(SET_REC_AUDIO_FORMAT, cfg_from_file.recording.audio_format);
 		int_to_val(SET_REC_VIDEO_FORMAT, cfg_from_file.recording.video_format);
 		int_to_val(SET_REC_QUALITY, cfg_from_file.recording.quality);
@@ -770,10 +776,8 @@ void objSet::to_cfg(QString group) {
 		int_to_val(SET_REC_OUTPUT_CUSTOM_HEIGHT, cfg_from_file.recording.output_custom_h);
 		int_to_val(SET_REC_USE_EMU_RESOLUTION, cfg_from_file.recording.use_emu_resolution);
 		int_to_val(SET_REC_FOLLOW_ROTATION, cfg_from_file.recording.follow_rotation);
-		cpy_utchar_to_val(SET_LAST_REC_VIDEO_PATH, cfg_from_file.last_rec_video_path);
-#endif
-		cpy_utchar_to_val(SET_LAST_REC_AUDIO_PATH, cfg_from_file.last_rec_audio_path);
 	}
+#endif
 }
 void objSet::fr_cfg(QString group) {
 	if ((group == "system") || (group == "all")) {
@@ -809,6 +813,7 @@ void objSet::fr_cfg(QString group) {
 		cfg_from_file.interpolation = val_to_int(SET_INTERPOLATION);
 		cfg_from_file.txt_on_screen = val_to_int(SET_TEXT_ON_SCREEN);
 		cfg_from_file.show_fps = val_to_int(SET_SHOW_FPS);
+		cfg_from_file.show_frames_and_lags = val_to_int(SET_SHOW_FRAMES_AND_LAGS);
 		cfg_from_file.input_display = val_to_int(SET_INPUT_DISPLAY);
 		cfg_from_file.disable_tv_noise = val_to_int(SET_DISABLE_TV_NOISE);
 		cfg_from_file.disable_sepia_color= val_to_int(SET_DISABLE_SEPIA_PAUSE);
@@ -844,6 +849,11 @@ void objSet::fr_cfg(QString group) {
 		cfg_from_file.language = val_to_int(SET_GUI_LANGUAGE);
 		cfg_from_file.toolbar.area = val_to_int(SET_GUI_TOOLBAR_AREA);
 		cfg_from_file.toolbar.hidden = val_to_int(SET_GUI_TOOLBAR_HIDDEN);
+#if defined (WITH_FFMPEG)
+		cfg_from_file.recording.last_type = val_to_int(SET_GUI_REC_LAST_TYPE);
+		cpy_val_to_utchar(SET_GUI_REC_LAST_VIDEO_PATH, cfg_from_file.last_rec_video_path, usizeof(cfg_from_file.last_rec_video_path));
+#endif
+		cpy_val_to_utchar(SET_GUI_REC_LAST_AUDIO_PATH, cfg_from_file.last_rec_audio_path, usizeof(cfg_from_file.last_rec_audio_path));
 	}
 
 	if ((group == "apu channels") || (group == "all")) {
@@ -868,8 +878,8 @@ void objSet::fr_cfg(QString group) {
 		cfg_from_file.nsf_player_nsfe_fadeout = val_to_int(SET_NSF_PLAYER_NSFE_FADEOUT);
 	}
 
-	if ((group == "recording") || (group == "all")) {
 #if defined (WITH_FFMPEG)
+	if ((group == "recording") || (group == "all")) {
 		cfg_from_file.recording.audio_format = val_to_int(SET_REC_AUDIO_FORMAT);
 		cfg_from_file.recording.video_format = val_to_int(SET_REC_VIDEO_FORMAT);
 		cfg_from_file.recording.quality = val_to_int(SET_REC_QUALITY);
@@ -878,10 +888,8 @@ void objSet::fr_cfg(QString group) {
 		cfg_from_file.recording.output_custom_h = val_to_int(SET_REC_OUTPUT_CUSTOM_HEIGHT);
 		cfg_from_file.recording.use_emu_resolution = val_to_int(SET_REC_USE_EMU_RESOLUTION);
 		cfg_from_file.recording.follow_rotation = val_to_int(SET_REC_FOLLOW_ROTATION);
-		cpy_val_to_utchar(SET_LAST_REC_VIDEO_PATH, cfg_from_file.last_rec_video_path, usizeof(cfg_from_file.last_rec_video_path));
-#endif
-		cpy_val_to_utchar(SET_LAST_REC_AUDIO_PATH, cfg_from_file.last_rec_audio_path, usizeof(cfg_from_file.last_rec_audio_path));
 	}
+#endif
 }
 void objSet::after_the_defaults() {
 	machine = machinedb[NTSC - 1];

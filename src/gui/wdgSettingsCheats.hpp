@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class wdgSettingsCheats : public QWidget, public Ui::wdgSettingsCheats {
 		void cheat_editor_control(void);
 
 	private slots:
-		void s_cheat_mode(int index);
+		void s_cheat_mode(bool checked);
 };
 
 #endif /* WDGSETTINGSCHEATS_HPP_ */

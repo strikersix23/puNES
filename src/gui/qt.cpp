@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QImage>
 #include <QtCore/QDir>
@@ -236,6 +235,10 @@ void gui_set_window_size(void) {
 	qt.mwin->statusbar->update_width(w);
 }
 
+void gui_set_save_slot_tooltip(BYTE slot, char *buffer) {
+	qt.mwin->set_save_slot_tooltip(slot, buffer);
+}
+
 void gui_update(void) {
 	uTCHAR title[255];
 
@@ -254,6 +257,20 @@ void gui_update_dset(void) {
 }
 void gui_update_gps_settings(void) {
 	qt.dset->change_rom();
+}
+
+void gui_update_ppu_hacks_widgets(void) {
+	qt.dset->widget_Settings_PPU->update_widget();
+}
+void gui_update_apu_channels_widgets(void) {
+	qt.dset->update_tab_audio();
+}
+void gui_update_recording_widgets(void) {
+	qt.mwin->update_recording_widgets();
+}
+
+void gui_update_recording_tab(void) {
+	qt.dset->update_tab_recording();
 }
 
 void gui_egds_set_fps(void) {
@@ -275,10 +292,6 @@ void gui_egds_start_rwnd(void) {
 }
 void gui_egds_stop_rwnd(void) {
 	qt.mwin->egds->stop_rwnd();
-}
-
-void gui_update_recording_widget(void) {
-	qt.mwin->update_recording_widgets();
 }
 
 void gui_fullscreen(void) {
@@ -501,14 +514,6 @@ void gui_vs_system_insert_coin(void) {
 	if (vs_system.enabled == TRUE) {
 		qt.vssystem->insert_coin(1);
 	}
-}
-
-void gui_apu_channels_widgets_update(void) {
-	qt.dset->update_tab_audio();
-}
-
-void gui_ppu_hacks_widgets_update(void) {
-	qt.dset->widget_Settings_PPU->update_widget();
 }
 
 #if defined (WITH_OPENGL)

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ wdgRotateScreen::wdgRotateScreen(QWidget *parent) : QWidget(parent) {
 
 	connect(pushButton_left, SIGNAL(clicked(bool)), this, SLOT(s_rotate_to_left(bool)));
 	connect(pushButton_right, SIGNAL(clicked(bool)), this, SLOT(s_rotate_to_right(bool)));
+	connect(pushButton_flip, SIGNAL(toggled(bool)), this, SLOT(s_flip(bool)));
 
 	label_desc->setFixedWidth(QLabel("00000").sizeHint().width());
 }
@@ -73,6 +74,7 @@ void wdgRotateScreen::update_widget(void) {
 			break;
 	}
 	label_desc->setText(desc);
+	qtHelper::pushbutton_set_checked(pushButton_flip, cfg->hflip_screen);
 }
 
 void wdgRotateScreen::s_rotate_to_left(UNUSED(bool checked)) {
@@ -89,6 +91,13 @@ void wdgRotateScreen::s_rotate_to_right(UNUSED(bool checked)) {
 		cfg->screen_rotation = ROTATE_0;
 	}
 	emu_thread_pause();
+	gfx_set_screen(NO_CHANGE, NO_CHANGE, NO_CHANGE, NO_CHANGE, NO_CHANGE, TRUE, FALSE);
+	gui_set_focus();
+	emu_thread_continue();
+}
+void wdgRotateScreen::s_flip(UNUSED(bool checked)) {
+	emu_thread_pause();
+	cfg->hflip_screen = !cfg->hflip_screen;
 	gfx_set_screen(NO_CHANGE, NO_CHANGE, NO_CHANGE, NO_CHANGE, NO_CHANGE, TRUE, FALSE);
 	gui_set_focus();
 	emu_thread_continue();

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ enum set_element {
 	SET_INTERPOLATION,
 	SET_TEXT_ON_SCREEN,
 	SET_SHOW_FPS,
+	SET_SHOW_FRAMES_AND_LAGS,
 	SET_INPUT_DISPLAY,
 	SET_DISABLE_TV_NOISE,
 	SET_DISABLE_SEPIA_PAUSE,
@@ -100,6 +101,11 @@ enum set_element {
 	SET_GUI_LANGUAGE,
 	SET_GUI_TOOLBAR_AREA,
 	SET_GUI_TOOLBAR_HIDDEN,
+#if defined (WITH_FFMPEG)
+	SET_GUI_REC_LAST_TYPE,
+	SET_GUI_REC_LAST_VIDEO_PATH,
+#endif
+	SET_GUI_REC_LAST_AUDIO_PATH,
 	SET_APU_MASTER,
 	SET_APU_SQUARE1,
 	SET_APU_SQUARE2,
@@ -121,10 +127,8 @@ enum set_element {
 	SET_REC_OUTPUT_CUSTOM_WIDTH,
 	SET_REC_OUTPUT_CUSTOM_HEIGHT,
 	SET_REC_USE_EMU_RESOLUTION,
-	SET_REC_FOLLOW_ROTATION,
-	SET_LAST_REC_VIDEO_PATH,
+	SET_REC_FOLLOW_ROTATION
 #endif
-	SET_LAST_REC_AUDIO_PATH
 };
 enum pgs_element {
 	SET_PGS_SLOT,
@@ -468,7 +472,8 @@ static const _opt opt_languages[] = {
 	{NULL, uL("spanish")   , LNG_SPANISH},
 	{NULL, uL("hungarian") , LNG_HUNGARIAN},
 	{NULL, uL("turkish")   , LNG_TURKISH},
-	{NULL, uL("portuguese"), LNG_PORTUGUESEBR}
+	{NULL, uL("portuguese"), LNG_PORTUGUESEBR},
+	{NULL, uL("chinese simplified"), LNG_CHINESE_SIMPLIFIED}
 };
 static const _opt opt_nsf_player_effect[] = {
 	{NULL, uL("bars")       , NSF_EFFECT_BARS},
@@ -479,6 +484,10 @@ static const _opt opt_nsf_player_effect[] = {
 	{NULL, uL("hannig full"), NSF_EFFECT_HANNING_FULL}
 };
 #if defined (WITH_FFMPEG)
+static const _opt opt_recording_format_type[] = {
+	{NULL, uL("video")  , REC_FORMAT_VIDEO},
+	{NULL, uL("audio")  , REC_FORMAT_AUDIO}
+};
 static const _opt opt_recording_audio_format[] = {
 	{NULL, uL("mp3")  , REC_FORMAT_AUDIO_MP3},
 	{NULL, uL("aac")  , REC_FORMAT_AUDIO_AAC},
@@ -756,6 +765,12 @@ static const _settings main_cfg[] = {
 		{LENGTH(opt_no_yes), opt_no_yes}
 	},
 	{
+		uL("video"), uL("show frames and lags counters"), uL("no"),
+		uL("# possible values: yes, no"),
+		NULL,
+		{LENGTH(opt_no_yes), opt_no_yes}
+	},
+	{
 		uL("video"), uL("input display"), uL("no"),
 		uL("# possible values: yes, no"),
 		uL("    --input-display       enable input gui      : yes, no"),
@@ -913,9 +928,11 @@ static const _settings main_cfg[] = {
 	},
 	{
 		uL("GUI"), uL("language"), uL("english"),
-		uL("# possible values: english, italian, russian, spanish, hungarian, turkish, portuguese"),
+		uL("# possible values: english, italian, russian, spanish, hungarian, turkish, portuguese," NEWLINE)
+		uL("#                  chinese simplified"),
 		uL("    --language            GUI language          : english, italian, russian, spanish," NEWLINE)
-		uL("                                                  hungarian, turkish, portuguese"),
+		uL("                                                  hungarian, turkish, portuguese,"  NEWLINE)
+		uL("                                                  chinese simplified"),
 		{LENGTH(opt_languages), opt_languages}
 	},
 	{
@@ -929,6 +946,26 @@ static const _settings main_cfg[] = {
 		uL("# possible values: yes, no"),
 		NULL,
 		{LENGTH(opt_no_yes), opt_no_yes}
+	},
+#if defined (WITH_FFMPEG)
+	{
+		uL("GUI"), uL("last recording type"), uL("audio"),
+		uL("# possible values: video, audio"),
+		NULL,
+		{LENGTH(opt_recording_format_type), opt_recording_format_type}
+	},
+	{
+		uL("GUI"), uL("last video recording path"), NULL,
+		uL("# possible values: [PATH]"),
+		NULL,
+		{0, NULL}
+	},
+#endif
+	{
+		uL("GUI"), uL("last audio recording path"), NULL,
+		uL("# possible values: [PATH]"),
+		NULL,
+		{0, NULL}
 	},
 	{
 		uL("apu channels"), uL("master"), uL("on,100"),
@@ -1058,20 +1095,8 @@ static const _settings main_cfg[] = {
 		uL("# possible values: yes, no"),
 		NULL,
 		{LENGTH(opt_no_yes), opt_no_yes}
-	},
-	{
-		uL("recording"), uL("last video recording path"), NULL,
-		uL("# possible values: [PATH]"),
-		NULL,
-		{0, NULL}
-	},
-#endif
-	{
-		uL("recording"), uL("last audio recording path"), NULL,
-		uL("# possible values: [PATH]"),
-		NULL,
-		{0, NULL}
 	}
+#endif
 };
 
 static const _settings pgs_cfg[] = {

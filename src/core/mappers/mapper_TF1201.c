@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ void extcl_cpu_wr_mem_TF1201(WORD address, BYTE value) {
 			irqA12.enable = value & 0x02;
 			irq.high &= ~EXT_IRQ;
 
-			if ((ppu.frame_y > ppu_sclines.vint) && (ppu.screen_y < SCR_LINES)) {
+			if ((ppu.frame_y > ppu_sclines.vint) && (ppu.screen_y < SCR_ROWS)) {
 				irqA12.counter -= 8;
 			}
 			return;

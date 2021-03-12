@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,8 +58,6 @@ class wdgSettingsVideo : public QWidget, public Ui::wdgSettingsVideo {
 		void shader_param_set(void);
 		void palette_set(void);
 		bool call_gfx_set_screen(int mtype);
-		void spinbox_set_value(QSpinBox *spn, int value);
-		void pushbutton_set_checked(QPushButton *btn, bool mode);
 
 	private slots:
 		void s_scale(bool checked);
@@ -90,6 +88,7 @@ class wdgSettingsVideo : public QWidget, public Ui::wdgSettingsVideo {
 		void s_interpolation(bool checked);
 		void s_text_on_screen(bool checked);
 		void s_show_fps(bool checked);
+		void s_show_frames_and_lags(bool checked);
 		void s_input_display(bool checked);
 		void s_disable_tv_noise(bool checked);
 		void s_disable_sepia(bool checked);

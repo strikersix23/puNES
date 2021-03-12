@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,12 +64,21 @@ wdgSettingsRecording::wdgSettingsRecording(QWidget *parent) : QWidget(parent) {
 #if defined (WITH_FFMPEG)
 	output_format_init();
 
+	widget_Output_Quality->setStyleSheet(button_stylesheet());
+
 	cfg->recording.output_custom_w = output_custom_control(cfg->recording.output_custom_w, 256, 2048, 512);
 	cfg->recording.output_custom_h = output_custom_control(cfg->recording.output_custom_h, 240, 2048, 480);
 
 	connect(comboBox_Output_Video_Format, SIGNAL(activated(int)), this, SLOT(s_output_video_format(int)));
 	connect(comboBox_Output_Audio_Format, SIGNAL(activated(int)), this, SLOT(s_output_audio_format(int)));
-	connect(comboBox_Output_Quality, SIGNAL(activated(int)), this, SLOT(s_output_quality(int)));
+
+	pushButton_Output_Quality_low->setProperty("mtype", QVariant(REC_QUALITY_LOW));
+	pushButton_Output_Quality_medium->setProperty("mtype", QVariant(REC_QUALITY_MEDIUM));
+	pushButton_Output_Quality_high->setProperty("mtype", QVariant(REC_QUALITY_HIGH));
+
+	connect(pushButton_Output_Quality_low, SIGNAL(toggled(bool)), this, SLOT(s_output_quality(bool)));
+	connect(pushButton_Output_Quality_medium, SIGNAL(toggled(bool)), this, SLOT(s_output_quality(bool)));
+	connect(pushButton_Output_Quality_high, SIGNAL(toggled(bool)), this, SLOT(s_output_quality(bool)));
 
 	lineEdit_Output_Custom_Width->setValidator(new QIntValidator(0, 9999, this));
 	lineEdit_Output_Custom_Height->setValidator(new QIntValidator(0, 9999, this));
@@ -108,6 +117,7 @@ void wdgSettingsRecording::showEvent(UNUSED(QShowEvent *event)) {
 
 void wdgSettingsRecording::retranslateUi(QWidget *wdgSettingsRecording) {
 	Ui::wdgSettingsRecording::retranslateUi(wdgSettingsRecording);
+	output_format_init();
 	update_widget();
 }
 void wdgSettingsRecording::update_widget(void) {
@@ -129,9 +139,11 @@ void wdgSettingsRecording::update_widget(void) {
 			break;
 	}
 
+	output_quality_set();
+
 	icon_Output_Quality->setEnabled(mode);
 	label_Output_Quality->setEnabled(mode);
-	comboBox_Output_Quality->setEnabled(mode);
+	widget_Output_Quality->setEnabled(mode);
 
 	comboBox_Output_Video_Format->setCurrentIndex(cfg->recording.video_format);
 
@@ -157,13 +169,8 @@ void wdgSettingsRecording::update_widget(void) {
 	lineEdit_Output_Custom_Height->setEnabled(mode);
 	lineEdit_Output_Custom_Height->setText(QString("%1").arg(cfg->recording.output_custom_h));
 
-	checkBox_Use_emu_resolution->blockSignals(true);
-	checkBox_Use_emu_resolution->setChecked(cfg->recording.use_emu_resolution);
-	checkBox_Use_emu_resolution->blockSignals(false);
-
-	checkBox_Follow_rotation->blockSignals(true);
-	checkBox_Follow_rotation->setChecked(cfg->recording.follow_rotation);
-	checkBox_Follow_rotation->blockSignals(false);
+	qtHelper::checkbox_set_checked(checkBox_Use_emu_resolution, cfg->recording.use_emu_resolution);
+	qtHelper::checkbox_set_checked(checkBox_Follow_rotation, cfg->recording.follow_rotation);
 }
 
 void wdgSettingsRecording::combobox_format_init(QComboBox *cb,  int start, int end) {
@@ -202,7 +209,6 @@ void wdgSettingsRecording::output_format_init(void) {
 
 	comboBox_Output_Audio_Format->setCurrentIndex(cfg->recording.audio_format - REC_FORMAT_AUDIO_WAV);
 	comboBox_Output_Video_Format->setCurrentIndex(cfg->recording.video_format);
-	comboBox_Output_Quality->setCurrentIndex(cfg->recording.quality);
 }
 void wdgSettingsRecording::output_resolution_init(void) {
 	int w = -1, h = -1;
@@ -217,6 +223,23 @@ void wdgSettingsRecording::output_resolution_init(void) {
 		if (index != -1) {
 			comboBox_Output_Resolution->setCurrentIndex(index);
 		}
+	}
+}
+void wdgSettingsRecording::output_quality_set(void) {
+	qtHelper::pushbutton_set_checked(pushButton_Output_Quality_low, false);
+	qtHelper::pushbutton_set_checked(pushButton_Output_Quality_medium, false);
+	qtHelper::pushbutton_set_checked(pushButton_Output_Quality_high, false);
+	switch (cfg->recording.quality) {
+		default:
+		case REC_QUALITY_LOW:
+			qtHelper::pushbutton_set_checked(pushButton_Output_Quality_low, true);
+			break;
+		case REC_QUALITY_MEDIUM:
+			qtHelper::pushbutton_set_checked(pushButton_Output_Quality_medium, true);
+			break;
+		case REC_QUALITY_HIGH:
+			qtHelper::pushbutton_set_checked(pushButton_Output_Quality_high, true);
+			break;
 	}
 }
 int wdgSettingsRecording::output_custom_control(int actual, int min, int max, int def) {
@@ -235,8 +258,13 @@ void wdgSettingsRecording::s_output_video_format(int index) {
 	cfg->recording.video_format = index + REC_FORMAT_VIDEO_MPG_MPEG1;
 	update_widget();
 }
-void wdgSettingsRecording::s_output_quality(int index) {
-	cfg->recording.quality = index;
+void wdgSettingsRecording::s_output_quality(bool checked) {
+	if (checked) {
+		int quality = QVariant(((QPushButton *)sender())->property("mtype")).toInt();
+
+		cfg->recording.quality = quality;
+	}
+	output_quality_set();
 }
 void wdgSettingsRecording::s_output_resolution(int index) {
 	if (index == 0) {
@@ -358,6 +386,7 @@ QString wdgRecGetSaveFileName::video_get_save_file_name(void) {
 	if (exec() == QDialog::Accepted) {
 		cfg->recording.video_format = rec_cfg.video_format;
 		cfg->recording.quality = rec_cfg.quality;
+		gui_update_recording_tab();
 		return (control_filename(rec_cfg.video_format));
 	}
 

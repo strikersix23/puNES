@@ -4,7 +4,7 @@
 [![AUR package](https://repology.org/badge/version-for-repo/aur/punes.svg)](https://repology.org/project/punes/versions)
 [![SlackBuilds package](https://repology.org/badge/version-for-repo/slackbuilds/punes.svg)](https://repology.org/project/punes/versions)
 [![Rosa 2019.1 package](https://repology.org/badge/version-for-repo/rosa_2019_1/punes.svg)](https://repology.org/project/punes/versions)
-[![LiGurOS 21.1 package](https://repology.org/badge/version-for-repo/liguros_21_1/punes.svg)](https://repology.org/project/punes/versions)
+[![LiGurOS stable package](https://repology.org/badge/version-for-repo/liguros_stable/punes.svg)](https://repology.org/project/punes/versions)
 [![Wikidata package](https://repology.org/badge/version-for-repo/wikidata/punes.svg)](https://repology.org/project/punes/versions)
 
 Description
@@ -38,6 +38,7 @@ How to Compile
 * [Qt5](https://www.qt.io) with OpenGL support (qtbase, qtsvg and qttools)
 * [nvidia-cg](https://developer.nvidia.com/cg-toolkit)
 * [alsa](https://www.alsa-project.org)
+* [cmake](https://cmake.org)
 * (optional) [ffmpeg libraries >= 4.0](https://ffmpeg.org) if you want video and audio recording support (libavcodec, libavformat, libavutil, libswresample and libswscale). See [notes](#ffmpeg).
 #### Compilation of puNES
 ```bash
@@ -56,7 +57,7 @@ CFLAGS="-g -DDEBUG" CXXFLAGS="-g -DDEBUG" ./configure --disable-release [...]
 where `[...]` are the other necessary options.
 #### Example on how to compile on Ubuntu 20.10
 ```bash
-sudo apt-get install git autotools-dev autoconf build-essential pkg-config libasound2-dev qtbase5-dev qttools5-dev-tools libqt5svg5-dev nvidia-cg-toolkit
+sudo apt-get install git cmake autotools-dev autoconf build-essential pkg-config libasound2-dev qtbase5-dev qttools5-dev-tools libqt5svg5-dev nvidia-cg-toolkit
 sudo apt-get install libavcodec-dev libavformat-dev libavutil-dev libswresample-dev libswscale-dev
 git clone https://github.com/punesemu/puNES
 cd puNES
@@ -72,6 +73,7 @@ to start the emulator
 #### Dependencies
 * [Qt5](https://www.qt.io) with OpenGL support (qtbase, qtsvg and qttools)
 * [sndio](http://www.sndio.org)
+* [cmake](https://cmake.org)
 * (optional) [ffmpeg libraries >= 4.0](https://ffmpeg.org) if you want video and audio recording support (libavcodec, libavformat, libavutil, libswresample and libswscale). See [notes](#ffmpeg).
 #### Compilation of puNES
 ```bash
@@ -92,6 +94,7 @@ where `[...]` are the other necessary options.
 #### Dependencies
 * [Qt5](https://www.qt.io) with OpenGL support (qtbase, qtsvg and qttools)
 * [sndio](http://www.sndio.org)
+* [cmake](https://cmake.org)
 * (optional) [ffmpeg libraries >= 4.0](https://ffmpeg.org) if you want video and audio recording support (libavcodec, libavformat, libavutil, libswresample and libswscale). See [notes](#ffmpeg).
 #### Compilation of puNES
 ```bash
@@ -120,7 +123,7 @@ pacman -Syu
 3. close the MSYS2 window and run it again from Start menu
 ```bash
 pacman -Su
-pacman -S base-devel git wget p7zip unzip
+pacman -S base-devel git wget p7zip unzip mingw-w64-i686-cmake mingw-w64-x86_64-cmake
 pacman -S perl ruby python2 mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain
 exit
 ```
@@ -199,18 +202,11 @@ The executable `punes.exe` is in the `src` directory but in order to run it you 
 * cg.dll
 * cgD3D9.dll (only for D3D9 version)
 * cgGL.dll (only for OpenGL version)
-* libmp3lame-0.dll
-* libogg-0.dll
-* libspeex-1.dll
-* libvorbis-0.dll
-* libvorbisenc-2.dll
 * libwinpthread-1.dll
-* libx264-161.dll
-* libx265.dll
 * swresample-3.dll
 * swscale-5.dll
 
-that you can download here : [`64bit`](https://www.dropbox.com/s/bm17s1al2fywmop/puNES_x86_64_dlls.zip?dl=1) version or [`32bit`](https://www.dropbox.com/s/256gcdryvah5wo9/puNES_i686_dlls.zip?dl=1) version.
+that you can download here : [`64bit`](https://www.dropbox.com/s/7e01vzhmc4k5ead/puNES_x86_64_dlls.zip?dl=1) version or [`32bit`](https://www.dropbox.com/s/xaspmjmczkg1zjt/puNES_i686_dlls.zip?dl=1) version.
 #### Windows Debug version
 If you need the debug version then you need to replace the `./configure` command of the previous examples with the following:
 ```bash

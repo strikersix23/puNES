@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,12 @@ class slotComboBox : public QComboBox {
 
 	protected:
 		void paintEvent(QPaintEvent *event);
+
+	public:
+		void setCurrentIndex(int index);
+
+	private slots:
+		void s_index_changed(int index);
 };
 
 #include "wdgState.hh"
@@ -58,6 +64,9 @@ class wdgState : public QWidget, public Ui::wdgState {
 	protected:
 		void changeEvent(QEvent *event);
 		void paintEvent(QPaintEvent *event);
+
+	public:
+		void set_tooltip(int slot, QString tooltip);
 
 	private:
 		void retranslateUi(wdgState *wdgState);

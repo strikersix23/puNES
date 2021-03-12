@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@ typedef struct _turbo_button {
 	BYTE frequency;
 	BYTE active;
 	BYTE counter;
+	BYTE mode;
 } _turbo_button;
 typedef struct _port {
 	BYTE type;

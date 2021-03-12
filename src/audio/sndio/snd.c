@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -400,11 +400,7 @@ static void *sndio_thread_loop(UNUSED(void *data)) {
 		{
 			int nfds, event, rc;
 
-			if ((nfds = sio_pollfd(sndio.playback, sndio.pfds, POLLOUT)) <= 0) {
-				fprintf(stderr, "sio_pollfd() failed\n");
-				continue;
-			}
-
+			nfds = sio_pollfd(sndio.playback, sndio.pfds, POLLOUT);
 			rc = poll(sndio.pfds, nfds, 1);
 
 			if (rc == 0) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -99,15 +99,13 @@ void wdgToolBar::update_toolbar(void) {
 		rwnd = false;
 	} else {
 		state->setEnabled(true);
+		state->slotComboBox_slot->setCurrentIndex(save_slot.slot);
+		state->update();
 
 		if (cfg->rewind_minutes == RWND_0_MINUTES) {
 			rwnd = false;
 		}
-
-		state->slotComboBox_slot->setCurrentIndex(save_slot.slot);
-		state->update();
 	}
-
 	rewind->setEnabled(rwnd);
 	rotate->update_widget();
 }
@@ -115,9 +113,7 @@ void wdgToolBar::set_hide_without_signal(bool mode) {
 	if (cfg->toolbar.hidden == TRUE) {
 		mode = false;
 	}
-	blockSignals(true);
-	setVisible(mode);
-	blockSignals(false);
+	qtHelper::widget_set_visible(this, mode);
 }
 void wdgToolBar::rotate_setVisible(bool visible) {
 	if (action_rotate.separator) {

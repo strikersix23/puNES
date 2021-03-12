@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "audio/snd.h"
 #include "audio/channels.h"
 #include "conf.h"
+#include "settings.h"
 #if defined (WITH_OPENGL)
 #include "opengl.h"
 #else
@@ -246,10 +247,13 @@ void recording_start(uTCHAR *filename, int format) {
 
 	info.recording_on_air = TRUE;
 	ffmpeg.format_type = recording_format_info[rf].format_type;
-	info.recording_is_a_video = (info.recording_on_air == TRUE) && (ffmpeg.format_type == REC_FORMAT_VIDEO);
+	info.recording_is_a_video = (ffmpeg.format_type == REC_FORMAT_VIDEO);
+	cfg->recording.last_type = ffmpeg.format_type;
 
-	gui_update_recording_widget();
-	gui_apu_channels_widgets_update();
+	gui_update_recording_widgets();
+	gui_update_apu_channels_widgets();
+
+	settings_save_GUI();
 
 	recording_start_end:
 	gfx_thread_continue();
@@ -301,8 +305,8 @@ void recording_finish(BYTE from_quit) {
 	info.recording_is_a_video = FALSE;
 	ffmpeg.format_type = REC_FORMAT_NONE;
 
-	gui_update_recording_widget();
-	gui_apu_channels_widgets_update();
+	gui_update_recording_widgets();
+	gui_update_apu_channels_widgets();
 
 	if (from_quit == FALSE) {
 		gfx_thread_continue();

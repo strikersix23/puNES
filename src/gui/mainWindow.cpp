@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,11 +18,17 @@
 
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QtWidgets/QDesktopWidget>
+#else
+#include <QtGui/QWindow>
+#endif
+#include <QtWidgets/QSpinBox>
+#include <QtGui/QScreen>
 #include <QtCore/QDateTime>
 #include <QtCore/QUrl>
 #include <QtGui/QDesktopServices>
-#include <QtGui/QScreen>
+#include <QtCore/QBuffer>
 #include <libgen.h>
 #include "mainWindow.moc"
 #include "dlgSettings.hpp"
@@ -68,6 +74,8 @@ mainWindow::mainWindow() : QMainWindow() {
 
 	geom.setX(100);
 	geom.setY(100);
+	mgeom.setX(0);
+	mgeom.setY(0);
 
 	screen = new wdgScreen(centralwidget);
 	statusbar = new wdgStatusBar(this);
@@ -257,6 +265,7 @@ void mainWindow::closeEvent(QCloseEvent *event) {
 void mainWindow::retranslateUi(mainWindow *mainWindow) {
 	Ui::mainWindow::retranslateUi(mainWindow);
 	shortcuts();
+	save_slot_count_load();
 	update_window();
 }
 
@@ -380,6 +389,10 @@ void mainWindow::set_language(int lang) {
 			lng = "en";
 			file = "tr_TR";
 			break;
+		case LNG_CHINESE_SIMPLIFIED:
+			lng = "zh_CN";
+			file = "zh_CN";
+			break;
 		case LNG_ENGLISH:
 		default:
 			break;
@@ -456,6 +469,7 @@ void mainWindow::make_reset(int type) {
 
 	emu_thread_continue();
 
+	update_menu_file();
 	// dopo un reset la pause e' automaticamente disabilitata quindi faccio
 	// un aggiornamento del submenu NES per avere la voce correttamente settata.
 	update_menu_nes();
@@ -492,6 +506,10 @@ void mainWindow::shortcuts(void) {
 
 	// File
 	connect_shortcut(action_Open, SET_INP_SC_OPEN, SLOT(s_open()));
+	connect_shortcut(action_Start_Stop_Audio_recording, SET_INP_SC_REC_AUDIO, SLOT(s_start_stop_audio_recording()));
+#if defined (WITH_FFMPEG)
+	connect_shortcut(action_Start_Stop_Video_recording, SET_INP_SC_REC_VIDEO, SLOT(s_start_stop_video_recording()));
+#endif
 	connect_shortcut(action_Quit, SET_INP_SC_QUIT, SLOT(s_quit()));
 	// NES
 	connect_shortcut(action_Turn_Off, SET_INP_SC_TURN_OFF, SLOT(s_turn_on_off()));
@@ -500,10 +518,6 @@ void mainWindow::shortcuts(void) {
 	connect_shortcut(action_Insert_Coin, SET_INP_SC_INSERT_COIN, SLOT(s_insert_coin()));
 	connect_shortcut(action_Switch_sides, SET_INP_SC_SWITCH_SIDES, SLOT(s_disk_side()));
 	connect_shortcut(action_Eject_Insert_Disk, SET_INP_SC_EJECT_DISK, SLOT(s_eject_disk()));
-	connect_shortcut(action_Start_Stop_Audio_recording, SET_INP_SC_REC_AUDIO, SLOT(s_start_stop_audio_recording()));
-#if defined (WITH_FFMPEG)
-	connect_shortcut(action_Start_Stop_Video_recording, SET_INP_SC_REC_VIDEO, SLOT(s_start_stop_video_recording()));
-#endif
 	connect_shortcut(action_Fullscreen, SET_INP_SC_FULLSCREEN, SLOT(s_set_fullscreen()));
 	connect_shortcut(action_Save_Screenshot, SET_INP_SC_SCREENSHOT, SLOT(s_save_screenshot()));
 	connect_shortcut(action_Save_Unaltered_NES_screen, SET_INP_SC_SCREENSHOT_1X, SLOT(s_save_screenshot_1x()));
@@ -555,15 +569,18 @@ bool mainWindow::is_rwnd_shortcut_or_not_shcut(const QKeyEvent *event) {
 	return (true);
 }
 void mainWindow::update_gfx_monitor_dimension(void) {
-	int screenNumber = qApp->desktop()->screenNumber(this);
-	QRect g;
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+	QScreen *screen = QGuiApplication::screens().at(qApp->desktop()->screenNumber(this));
+#else
+	QScreen *screen = windowHandle()->screen();
+#endif
 
 	if (gfx.type_of_fscreen_in_use == FULLSCR_IN_WINDOW) {
 		bool toolbar_is_hidden = toolbar->isHidden() | toolbar->isFloating();
 
-		g = QGuiApplication::screens().at(screenNumber)->availableGeometry();
-		gfx.w[MONITOR] = g.width() - (frameGeometry().width() - geometry().width());
-		gfx.h[MONITOR] = g.height() - (frameGeometry().height() - geometry().height());
+		mgeom = screen->availableGeometry();
+		gfx.w[MONITOR] = mgeom.width() - (frameGeometry().width() - geometry().width());
+		gfx.h[MONITOR] = mgeom.height() - (frameGeometry().height() - geometry().height());
 
 		if (toolbar->orientation() == Qt::Vertical) {
 			gfx.w[MONITOR] -= (toolbar_is_hidden ? 0 : toolbar->sizeHint().width());
@@ -574,16 +591,40 @@ void mainWindow::update_gfx_monitor_dimension(void) {
 		gfx.h[MONITOR] -= (menubar->isHidden() ? 0 : menubar->sizeHint().height());
 		gfx.h[MONITOR] -= (statusbar->isHidden() ? 0 : statusbar->sizeHint().height());
 	} else if (gfx.type_of_fscreen_in_use == FULLSCR) {
-		g = QGuiApplication::screens().at(screenNumber)->geometry();
-		gfx.w[MONITOR] = g.width();
-		gfx.h[MONITOR] = g.height();
+		mgeom = screen->geometry();
+		gfx.w[MONITOR] = mgeom.width();
+		gfx.h[MONITOR] = mgeom.height();
 	}
+}
+void mainWindow::set_save_slot_tooltip(BYTE slot, char *buffer) {
+	QAction *action = findChild<QAction *>(QString("action_State_Slot_%1").arg(slot));
+	QString tooltip;
+
+	if (buffer) {
+		QImage image = QImage((uchar *)buffer, SCR_COLUMNS, SCR_ROWS, SCR_COLUMNS * sizeof(uint32_t), QImage::Format_RGB32);
+		QByteArray data;
+		QBuffer png(&data);
+
+		image = image.scaled(SCR_COLUMNS * 2, SCR_ROWS * 2, Qt::KeepAspectRatio);
+		image.save(&png, "PNG", 100);
+		tooltip = QString("<img src='data:image/png;base64, %1'>").arg(QString(data.toBase64()));
+	} else {
+		//: Refers to the unused save slot. Important: Do not translate the "%1".
+		tooltip = tr("Slot %1 never used").arg(slot);
+	}
+
+	action->setToolTip(tooltip);
+	toolbar->state->set_tooltip(slot, tooltip);
 }
 
 void mainWindow::connect_menu_signals(void) {
 	// File
 	connect_action(action_Open, SLOT(s_open()));
 	connect_action(action_Apply_Patch, SLOT(s_apply_patch()));
+	connect_action(action_Start_Stop_Audio_recording, SLOT(s_start_stop_audio_recording()));
+#if defined (WITH_FFMPEG)
+	connect_action(action_Start_Stop_Video_recording, SLOT(s_start_stop_video_recording()));
+#endif
 	connect_action(action_Open_working_folder, SLOT(s_open_working_folder()));
 	connect_action(action_Quit, SLOT(s_quit()));
 	// NES
@@ -601,10 +642,6 @@ void mainWindow::connect_menu_signals(void) {
 	connect_action(action_Disk_4_side_B, 7, SLOT(s_disk_side()));
 	connect_action(action_Switch_sides, 0xFFF, SLOT(s_disk_side()));
 	connect_action(action_Eject_Insert_Disk, SLOT(s_eject_disk()));
-	connect_action(action_Start_Stop_Audio_recording, SLOT(s_start_stop_audio_recording()));
-#if defined (WITH_FFMPEG)
-	connect_action(action_Start_Stop_Video_recording, SLOT(s_start_stop_video_recording()));
-#endif
 	connect_action(action_Fullscreen, SLOT(s_set_fullscreen()));
 	connect_action(action_Save_Screenshot, SLOT(s_save_screenshot()));
 	connect_action(action_Save_Unaltered_NES_screen, SLOT(s_save_screenshot_1x()));
@@ -723,6 +760,8 @@ void mainWindow::update_menu_file(void) {
 		action_Apply_Patch->setEnabled(true);
 	}
 
+	update_recording_widgets();
+
 	// recent roms
 	if (recent_roms_count() > 0) {
 		int i;
@@ -816,8 +855,6 @@ void mainWindow::update_menu_nes(void) {
 		action_Eject_Insert_Disk->setEnabled(false);
 	}
 
-	update_recording_widgets();
-
 	if ((info.pause_from_gui == TRUE) && (rwnd.active == FALSE)) {
 		action_Pause->setChecked(true);
 	} else {
@@ -848,41 +885,29 @@ void mainWindow::update_menu_state(void) {
 
 	action_Save_state->setEnabled(state);
 	action_Load_state->setEnabled(state);
+	action_Increment_slot->setEnabled(state);
+	action_Decrement_slot->setEnabled(state);
+
+	for (unsigned int i = 0; i < SAVE_SLOTS; i++) {
+		QAction *a = findChild<QAction *>(QString("action_State_Slot_%1").arg(i));
+		QString used = " *";
+		QString txt = a->text().replace(used, "");
+
+		if (i == save_slot.slot) {
+			a->setChecked(true);
+		}
+
+		if (save_slot.state[i]) {
+			a->setText(txt + used);
+		} else {
+			a->setText(txt);
+		}
+
+		a->setEnabled(state);
+	}
+
 	action_State_Save_to_file->setEnabled(state);
 	action_State_Load_from_file->setEnabled(state);
-
-	switch (save_slot.slot) {
-		case 0:
-			action_State_Slot_0->setChecked(true);
-			break;
-		case 1:
-			action_State_Slot_1->setChecked(true);
-			break;
-		case 2:
-			action_State_Slot_2->setChecked(true);
-			break;
-		case 3:
-			action_State_Slot_3->setChecked(true);
-			break;
-		case 4:
-			action_State_Slot_4->setChecked(true);
-			break;
-		case 5:
-			action_State_Slot_5->setChecked(true);
-			break;
-		case 6:
-			action_State_Slot_6->setChecked(true);
-			break;
-		case 7:
-			action_State_Slot_7->setChecked(true);
-			break;
-		case 8:
-			action_State_Slot_8->setChecked(true);
-			break;
-		case 9:
-			action_State_Slot_9->setChecked(true);
-			break;
-	}
 }
 
 void mainWindow::ctrl_disk_side(QAction *action) {
@@ -930,7 +955,7 @@ void mainWindow::s_set_fullscreen(void) {
 
 			update_gfx_monitor_dimension();
 			gfx_set_screen(NO_CHANGE, NO_CHANGE, NO_CHANGE, FULLSCR, NO_CHANGE, FALSE, FALSE);
-			move(QPoint(0, 0));
+			move(mgeom.x(), mgeom.y());
 		} else {
 			gfx.type_of_fscreen_in_use = FULLSCR;
 
@@ -1234,7 +1259,7 @@ void mainWindow::s_start_stop_audio_recording(void) {
 	} else {
 		wave_close();
 	}
-	update_menu_nes();
+	update_menu_file();
 #endif
 }
 #if defined (WITH_FFMPEG)
@@ -1332,6 +1357,7 @@ void mainWindow::s_state_save_slot_action(void) {
 		save_slot_load(save_slot.slot);
 	}
 	emu_thread_continue();
+	update_window();
 }
 void mainWindow::s_state_save_slot_incdec(void) {
 	int mode = QVariant(((QObject *)sender())->property("myValue")).toInt();
@@ -1472,6 +1498,7 @@ void mainWindow::s_help(void) {
 	about->setText(text);
 
 	text = "<center>" + QString(COPYRUTF8) + "</center>\n";
+	text.append("<center><a href=\"" + QString(GITLAB) + "\">" + "GitLab Page</a></center>");
 	text.append("<center><a href=\"" + QString(GITHUB) + "\">" + "GitHub Page</a></center>");
 	text.append("<center><a href=\"" + QString(WEBSITE) + "\">" + "NesDev Forum</a></center>");
 	text.append("<center>" + QString("-") + "</center>\n");
@@ -1512,6 +1539,14 @@ void mainWindow::s_shcjoy_read_timer(void) {
 						case SET_INP_SC_OPEN:
 							action_Open->trigger();
 							break;
+						case SET_INP_SC_REC_AUDIO:
+							action_Start_Stop_Audio_recording->trigger();
+							break;
+#if defined (WITH_FFMPEG)
+						case SET_INP_SC_REC_VIDEO:
+							action_Start_Stop_Video_recording->trigger();
+							break;
+#endif
 						case SET_INP_SC_QUIT:
 							action_Quit->trigger();
 							break;
@@ -1533,14 +1568,6 @@ void mainWindow::s_shcjoy_read_timer(void) {
 						case SET_INP_SC_EJECT_DISK:
 							action_Eject_Insert_Disk->trigger();
 							break;
-						case SET_INP_SC_REC_AUDIO:
-							action_Start_Stop_Audio_recording->trigger();
-							break;
-#if defined (WITH_FFMPEG)
-						case SET_INP_SC_REC_VIDEO:
-							action_Start_Stop_Video_recording->trigger();
-							break;
-#endif
 						case SET_INP_SC_FULLSCREEN:
 							action_Fullscreen->trigger();
 							break;
@@ -1844,4 +1871,32 @@ void timerEgds::s_draw_screen(void) {
 #endif
 		gfx_draw_screen();
 	}
+}
+
+// ----------------------------------------------------------------------------------------------
+
+void qtHelper::widget_set_visible(void *wdg, bool mode) {
+	((QWidget *)wdg)->blockSignals(true);
+	((QWidget *)wdg)->setVisible(mode);
+	((QWidget *)wdg)->blockSignals(false);
+}
+void qtHelper::pushbutton_set_checked(void *btn, bool mode) {
+	((QPushButton *)btn)->blockSignals(true);
+	((QPushButton *)btn)->setChecked(mode);
+	((QPushButton *)btn)->blockSignals(false);
+}
+void qtHelper::checkbox_set_checked(void *cbox, bool mode) {
+	((QCheckBox *)cbox)->blockSignals(true);
+	((QCheckBox *)cbox)->setChecked(mode);
+	((QCheckBox *)cbox)->blockSignals(false);
+}
+void qtHelper::slider_set_value(void *slider, int value) {
+	((QSlider *)slider)->blockSignals(true);
+	((QSlider *)slider)->setValue(value);
+	((QSlider *)slider)->blockSignals(false);
+}
+void qtHelper::spinbox_set_value(void *sbox, int value) {
+	((QSpinBox *)sbox)->blockSignals(true);
+	((QSpinBox *)sbox)->setValue(value);
+	((QSpinBox *)sbox)->blockSignals(false);
 }

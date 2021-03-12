@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -143,16 +143,16 @@ BYTE extcl_save_mapper_114(BYTE mode, BYTE slot, FILE *fp) {
 	save_slot_ele(mode, slot, m114.prg_rom_switch);
 	save_slot_ele(mode, slot, m114.mmc3_ctrl_change);
 	if (save_slot.version < 6) {
-		if (mode == SAVE_SLOT_READ) {
-			BYTE old_prg_rom_bank[4], i;
+		BYTE old_prg_rom_bank[4];
 
-			save_slot_ele(mode, slot, old_prg_rom_bank)
+		save_slot_ele(mode, slot, old_prg_rom_bank)
+
+		if (mode == SAVE_SLOT_READ) {
+			BYTE i;
 
 			for (i = 0; i < 4; i++) {
 				m114.prg_rom_bank[i] = old_prg_rom_bank[i];
 			}
-		} else if (mode == SAVE_SLOT_COUNT) {
-			save_slot.tot_size[slot] += sizeof(BYTE) * 4;
 		}
 	} else {
 		save_slot_ele(mode, slot, m114.prg_rom_bank);

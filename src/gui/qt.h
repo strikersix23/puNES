@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Fabio Cavallo (aka FHorse)
+ *  Copyright (C) 2010-2021 Fabio Cavallo (aka FHorse)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,29 @@
 #include "uncompress.h"
 #include "jstick.h"
 
+//	"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #aaabae);"
+
+#define button_stylesheet()\
+	"QPushButton {"\
+	"	margin: 0; padding: 2px; border: 2px groove gray;"\
+	"}"\
+	"QPushButton:disabled {"\
+	"	color: gray;"\
+	"}"\
+	"QPushButton:disabled:checked {"\
+	"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #aaabae, stop: 1 #f6f7fa);"\
+	"	color: gray;"\
+	"}"\
+	"QPushButton:checked {"\
+	"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #aaabae, stop: 1 #f6f7fa);"\
+	"	color: black;"\
+	"}"
+#define group_title_bold_stylesheet()\
+	"QGroupBox {"\
+	"	font-weight: bold;"\
+	"}"
+#define group_title_and_button_stylesheet()\
+	group_title_bold_stylesheet() button_stylesheet()
 #define tools_stylesheet()\
 	"QGroupBox {"\
 	"	border-radius: 10px;"\
@@ -106,9 +129,17 @@ EXTERNC void gui_start(void);
 EXTERNC void gui_set_video_mode(void);
 EXTERNC void gui_set_window_size(void);
 
+EXTERNC void gui_set_save_slot_tooltip(BYTE slot, char *buffer);
+
 EXTERNC void gui_update(void);
 EXTERNC void gui_update_dset(void);
 EXTERNC void gui_update_gps_settings(void);
+
+EXTERNC void gui_update_ppu_hacks_widgets(void);
+EXTERNC void gui_update_apu_channels_widgets(void);
+EXTERNC void gui_update_recording_widgets(void);
+
+EXTERNC void gui_update_recording_tab(void);
 
 EXTERNC void gui_egds_set_fps(void);
 EXTERNC void gui_egds_stop_unnecessary(void);
@@ -116,8 +147,6 @@ EXTERNC void gui_egds_start_pause(void);
 EXTERNC void gui_egds_stop_pause(void);
 EXTERNC void gui_egds_start_rwnd(void);
 EXTERNC void gui_egds_stop_rwnd(void);
-
-EXTERNC void gui_update_recording_widget(void);
 
 EXTERNC void gui_fullscreen(void);
 EXTERNC void gui_save_slot(BYTE slot);
@@ -171,10 +200,6 @@ EXTERNC void gui_external_control_windows_update_pos(void);
 
 EXTERNC void gui_vs_system_update_dialog(void);
 EXTERNC void gui_vs_system_insert_coin(void);
-
-EXTERNC void gui_apu_channels_widgets_update(void);
-
-EXTERNC void gui_ppu_hacks_widgets_update(void);
 
 #if defined (WITH_OPENGL)
 EXTERNC void gui_wdgopengl_make_current(void);
